@@ -1,0 +1,5 @@
+${PODS_ROOT}/Target Support Files/Pods-drevmass/Pods-drevmass-resources.sh
+${PODS_CONFIGURATION_BUILD_DIR}/Alamofire/Alamofire.bundle
+${PODS_CONFIGURATION_BUILD_DIR}/SDWebImage/SDWebImage.bundle
+${PODS_CONFIGURATION_BUILD_DIR}/SnapKit/SnapKit_Privacy.bundle
+${PODS_CONFIGURATION_BUILD_DIR}/youtube-ios-player-helper/Assets.bundle

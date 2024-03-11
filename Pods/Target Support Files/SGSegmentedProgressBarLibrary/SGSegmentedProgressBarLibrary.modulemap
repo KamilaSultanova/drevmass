@@ -1,0 +1,6 @@
+framework module SGSegmentedProgressBarLibrary {
+  umbrella header "SGSegmentedProgressBarLibrary-umbrella.h"
+
+  export *
+  module * { export * }
+}

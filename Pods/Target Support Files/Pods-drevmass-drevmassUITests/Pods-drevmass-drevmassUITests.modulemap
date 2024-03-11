@@ -1,0 +1,6 @@
+framework module Pods_drevmass_drevmassUITests {
+  umbrella header "Pods-drevmass-drevmassUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
