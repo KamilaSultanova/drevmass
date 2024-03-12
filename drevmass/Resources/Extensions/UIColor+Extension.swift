@@ -22,6 +22,7 @@ extension UIColor {
     static let appGray80 = color(named: "Gray80")
     static let appDark90 = color(named: "Dark90")
     static let appDark100 = color(named: "Dark100")
+    static let appBeige20 = color(named: "Beige20")
 
     /// Retrieves a color based on the provided name.
     ///

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import KeychainSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -15,12 +16,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else {
             return
         }
-
+        KeychainSwift().clear()
         let window = UIWindow(windowScene: windowScene)
         
-        let rootVC = OnboardingViewController()
-        window.rootViewController = UINavigationController(rootViewController: rootVC)
-        
+        if AuthService.shared.isAuthorized {
+            let tabBarVC = TabBarController()
+            window.rootViewController =  tabBarVC
+        } else {
+            let onboardingVC = OnboardingViewController()
+            window.rootViewController = UINavigationController(rootViewController: onboardingVC)
+           }
+    
         self.window = window
         window.makeKeyAndVisible()
     }

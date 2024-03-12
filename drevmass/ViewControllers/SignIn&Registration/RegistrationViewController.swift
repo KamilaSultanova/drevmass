@@ -7,8 +7,9 @@
 import UIKit
 import SnapKit
 import Alamofire
+import KeychainSwift
 
-class RegistrationViewController: UIViewController, UITextFieldDelegate {
+class RegistrationViewController: UIViewController {
     
     // MARK: - UI Elements
     
@@ -59,7 +60,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         return imageView
     }()
     
-    private lazy var clearButton: UIButton = {
+    private lazy var clearNameButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(named: "clear"), for: .normal)
         button.addTarget(self, action: #selector(clear), for: .touchDown)
@@ -95,6 +96,13 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         return imageView
     }()
     
+    private lazy var clearEmailButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "clear"), for: .normal)
+        button.addTarget(self, action: #selector(clear), for: .touchDown)
+        return button
+    }()
+    
     private lazy var phoneTextField: TextFieldWithPadding = {
         let textfield = TextFieldWithPadding()
 
@@ -118,11 +126,20 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         return textfield
     }()
     
+    private lazy var maxNumber = 11
+    
     private lazy var phoneIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.image = .phone
         
         return imageView
+    }()
+    
+    private lazy var clearPhoneButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "clear"), for: .normal)
+        button.addTarget(self, action: #selector(clear), for: .touchDown)
+        return button
     }()
     
     private lazy var passwordTextField: TextFieldWithPadding = {
@@ -183,7 +200,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         let button = UIButton()
         button.setTitle("Продолжить", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(red: 0.83, green: 0.78, blue: 0.70, alpha: 1.00)
+        button.backgroundColor = .appBeige20
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
@@ -207,7 +224,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
     }
     
     private func setupUI() {
-        view.addSubviews(registLabel, greetLabel, nameTextField, nameIcon, clearButton, emailTextField, emailIcon, phoneTextField, phoneIcon, passwordTextField, passwordIcon, showButton, enterLabel, enterButton, continueButton)
+        view.addSubviews(registLabel, greetLabel, nameTextField, nameIcon, clearNameButton, emailTextField, emailIcon, phoneTextField, phoneIcon, passwordTextField, passwordIcon, showButton, enterLabel, enterButton, continueButton, clearEmailButton, clearPhoneButton)
     }
     
     private func setupConstraints() {
@@ -233,7 +250,7 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
             make.size.equalTo(24)
         }
         
-        clearButton.snp.makeConstraints { make in
+        clearNameButton.snp.makeConstraints { make in
             make.centerY.equalTo(nameTextField)
             make.right.equalTo(nameTextField.snp.right)
             make.size.equalTo(24)
@@ -251,6 +268,12 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
             make.size.equalTo(24)
         }
         
+        clearEmailButton.snp.makeConstraints { make in
+            make.centerY.equalTo(emailTextField)
+            make.right.equalTo(emailTextField.snp.right)
+            make.size.equalTo(24)
+        }
+        
         phoneTextField.snp.makeConstraints { make in
             make.top.equalTo(emailTextField.snp.bottom).offset(12)
             make.horizontalEdges.equalTo(emailTextField)
@@ -260,6 +283,12 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
         phoneIcon.snp.makeConstraints { make in
             make.centerY.equalTo(phoneTextField)
             make.left.equalTo(phoneTextField.snp.left)
+            make.size.equalTo(24)
+        }
+        
+        clearPhoneButton.snp.makeConstraints { make in
+            make.centerY.equalTo(phoneTextField)
+            make.right.equalTo(phoneTextField.snp.right)
             make.size.equalTo(24)
         }
         
@@ -299,7 +328,19 @@ class RegistrationViewController: UIViewController, UITextFieldDelegate {
     }
     
         private func configureViews() {
-        clearButton.isHidden = true
+            if emailTextField.state.isEmpty == true{
+                clearEmailButton.isHidden = true
+            }
+            if nameTextField.state.isEmpty == true{
+                clearNameButton.isHidden = true
+            }
+            if phoneTextField.state.isEmpty == true{
+                clearPhoneButton.isHidden = true
+            }
+            if emailTextField.state.isEmpty || passwordTextField.state.isEmpty || phoneTextField.state.isEmpty || nameTextField.state.isEmpty {
+                continueButton.isEnabled = false
+                continueButton.backgroundColor = .appBeige20
+            }
     }
 }
 
@@ -309,7 +350,7 @@ extension RegistrationViewController {
         continueButton.snp.remakeConstraints { make in
             if #available(iOS 15.0, *) {
                 make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-10)
                 make.height.equalTo(56)
             }
         }
@@ -329,8 +370,32 @@ extension RegistrationViewController {
     @objc
     func textEditDidBegin(_ sender: TextFieldWithPadding) {
         sender.bottomBorderColor = .appBeige100
-        if phoneTextField.text?.isEmpty ?? true {
-            phoneTextField.text = "+7"
+        if sender == nameTextField {
+            if nameTextField.text?.isEmpty == false{
+                clearNameButton.isHidden = false
+            } else {
+                clearNameButton.isHidden = true
+            }
+        }
+        if sender == emailTextField {
+            emailIcon.image = .mail
+            if emailTextField.text?.isEmpty == false{
+                clearEmailButton.isHidden = false
+            } else {
+                clearEmailButton.isHidden = true
+            }
+        }
+        if sender == phoneTextField {
+            phoneIcon.image = .phone
+            if phoneTextField.text?.isEmpty == false{
+                clearPhoneButton.isHidden = false
+            } else {
+                clearPhoneButton.isHidden = true
+            }
+            
+            if phoneTextField.text?.isEmpty ?? true {
+                phoneTextField.text = "+"
+            }
         }
     }
     
@@ -338,12 +403,19 @@ extension RegistrationViewController {
     func textEditDidEnd(_ sender: TextFieldWithPadding) {
         sender.bottomBorderColor = .appGray50
         if sender == nameTextField {
-            clearButton.isHidden = true
+            clearNameButton.isHidden = true
+        }
+        if sender == emailTextField {
+            clearEmailButton.isHidden = true
+        }
+        if sender == phoneTextField {
+            clearPhoneButton.isHidden = true
         }
     }
     
     @objc
     func textEditDidChanged(_ sender: TextFieldWithPadding) {
+        configureViews()
         sender.bottomBorderColor = .appBeige100
         if !nameTextField.text!.isEmpty && !emailTextField.text!.isEmpty && !phoneTextField.text!.isEmpty && !passwordTextField.text!.isEmpty {
                 continueButton.backgroundColor = .appBeige100
@@ -352,28 +424,53 @@ extension RegistrationViewController {
         
         if sender == nameTextField {
             if nameTextField.text!.isEmpty {
-                clearButton.isHidden = true
+                clearNameButton.isHidden = true
             } else {
-                clearButton.isHidden = false
+                clearNameButton.isHidden = false
             }
             nameIcon.image = .nameIcon
         }
         
-        switch sender {
-        case emailTextField:
-            return emailIcon.image = .mail
-        case passwordTextField:
-            return passwordIcon.image = .lock
-        case phoneTextField:
-            return passwordIcon.image = .lock
-        default:
-            break
+        if sender == emailTextField {
+            if emailTextField.text!.isEmpty {
+                clearEmailButton.isHidden = true
+            } else {
+                clearEmailButton.isHidden = false
+            }
+            emailIcon.image = .mail
+        }
+        
+        if sender == phoneTextField {
+            if phoneTextField.text!.isEmpty {
+                clearPhoneButton.isHidden = true
+            } else {
+                clearPhoneButton.isHidden = false
+            }
+            phoneIcon.image = .phone
+        }
+        
+        if sender == passwordTextField {
+            passwordIcon.image = .lock
         }
     }
     
     @objc
-    func clear() {
-        nameTextField.text = ""
+    func clear(_ sender: UIButton) {
+        if sender == clearNameButton {
+            nameTextField.text = ""
+            clearNameButton.isHidden = true
+            configureViews()
+        }
+        if sender == clearEmailButton {
+            emailTextField.text = ""
+            clearEmailButton.isHidden = true
+            configureViews()
+        }
+        if sender == clearPhoneButton {
+            phoneTextField.text = ""
+            clearPhoneButton.isHidden = true
+            configureViews()
+        }
     }
     
     @objc
@@ -412,12 +509,12 @@ extension RegistrationViewController {
             emailIcon.image = .mail.withTintColor(.red)
         }
         
-       if phoneNumber.isEmpty || (((phoneNumber.rangeOfCharacter(from: CharacterSet(charactersIn: "0123456789+").inverted)) != nil) || phoneNumber.dropFirst().contains("+")) || phoneNumber.count != 12 {
+        if phoneNumber.isEmpty{
             phoneTextField.bottomBorderColor = .red
             phoneIcon.image = .phone.withTintColor(.red)
         }
 
-        if password.isEmpty || password.range(of: "^[a-zA-Z0-9!@#$%^&*()-_=+\\|[{]};:'\",<.>/?]+$", options: .regularExpression) == nil {
+        if password.isEmpty || password.count < 6||password.range(of: "^[a-zA-Z0-9!@#$%^&*()-_=+\\|[{]};:'\",<.>/?]+$", options: .regularExpression) == nil {
             passwordTextField.bottomBorderColor = .red
             passwordIcon.image = .lock.withTintColor(.red)
         } else {
@@ -435,6 +532,7 @@ extension RegistrationViewController {
                     response in
                     switch response.result {
                     case .success:
+                        KeychainSwift().set(AuthService.shared.token, forKey: "token")
                         self.startApp()
                     case .failure(let error):
                         print(error.localizedDescription)
@@ -448,5 +546,33 @@ extension RegistrationViewController {
         let tabBarVC = TabBarController()
         tabBarVC.modalPresentationStyle = .fullScreen
         self.present(tabBarVC, animated: true )
+    }
+}
+
+extension RegistrationViewController : UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if textField == phoneTextField {
+            guard let text = textField.text else {return false}
+            let newString = (text as NSString).replacingCharacters(in: range, with: string)
+            textField.text = formatter(mask: "+X XXX XXX XX XX", phoneNumber: newString)
+        }
+        return false
+    }
+    
+    func formatter(mask: String, phoneNumber: String) -> String{
+        let number = phoneNumber.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
+        var result: String = ""
+        var index = number.startIndex
+        
+        for character in mask where index < number.endIndex {
+            if character == "X" {
+                result.append(number[index])
+                index = number.index(after: index)
+            } else {
+                result.append(character)
+            }
+        }
+        
+        return result
     }
 }

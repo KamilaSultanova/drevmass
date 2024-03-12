@@ -7,7 +7,7 @@
 import Foundation
 
 enum Endpoints {
-    case products(sorting: SortingType)
+//    case products(sorting: SortingType)
     case asset(name: String)
 	case courses
     case courseDetail(id: Int)
@@ -20,18 +20,19 @@ enum Endpoints {
     private static let baseURL = "http://185.100.67.103/api/"
     
     private var endpoint: String {
-        switch self {
-            case .products(sorting: let sorting):
-                let sort = switch sorting {
-                    case .popular:
-                        "famous"
-                    case .priceAsc:
-                        "priceup"
-                    case .priceDesc:
-                        "pricedown"
-                }
-                    
-                return "products/\(sort)"
+        switch self 
+        {
+//            case .products(sorting: let sorting):
+//                let sort = switch sorting {
+//                    case .popular:
+//                        "famous"
+//                    case .priceAsc:
+//                        "priceup"
+//                    case .priceDesc:
+//                        "pricedown"
+//                }
+//                    
+//                return "products/\(sort)"
         case .asset(name: let name):
             return name
 		case .courses:

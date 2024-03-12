@@ -1,23 +1,29 @@
 //
-// CartViewController
-// Created by Nurasyl on 22.11.2023.
-// Copyright © 2023 Drevmass. All rights reserved.
+//  CartViewController.swift
+//  drevmass
+//
+//  Created by Kamila Sultanova on 12.03.2024.
 //
 
 import UIKit
 
 class CartViewController: UIViewController {
 
-    // MARK: - Lifecycle
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupViews()
-    }
-}
 
-private extension CartViewController {
-    func setupViews() {
-        view.backgroundColor = .appBackground
+        // Do any additional setup after loading the view.
     }
+    
+
+    /*
+    // MARK: - Navigation
+
+    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        // Get the new view controller using segue.destination.
+        // Pass the selected object to the new view controller.
+    }
+    */
+
 }

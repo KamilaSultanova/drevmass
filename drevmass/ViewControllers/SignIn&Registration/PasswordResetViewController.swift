@@ -88,9 +88,12 @@ class PasswordResetViewController: UIViewController {
         view.backgroundColor = .white
         title = "Сбросить пароль"    
         navigationItem.leftBarButtonItem = backButton
+        navigationController?.navigationBar.tintColor = .appBeige100
         configureViews()
         setupUI()
         setupConstraints()
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 
@@ -137,6 +140,28 @@ private extension PasswordResetViewController {
 private extension PasswordResetViewController {
     
     @objc
+    func keyboardWillAppear() {
+        resetButton.snp.remakeConstraints { make in
+            if #available(iOS 15.0, *) {
+                make.horizontalEdges.equalToSuperview().inset(32)
+                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+                make.height.equalTo(56)
+            }
+        }
+    }
+    
+    @objc
+    func keyboardWillHide() {
+        resetButton.snp.remakeConstraints { make in
+            if #available(iOS 15.0, *) {
+                make.horizontalEdges.equalToSuperview().inset(32)
+                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+                make.height.equalTo(56)
+            }
+        }
+    }
+    
+    @objc
     func backButtonTapped() {
         dismiss(animated: true, completion: nil)
     }
@@ -146,6 +171,7 @@ private extension PasswordResetViewController {
         clearButton.isHidden = emailTextField.text?.isEmpty ?? true
         
         if !emailTextField.text!.isEmpty {
+            resetButton.isEnabled = true
             resetButton.backgroundColor = .appBeige100
         }
     }
@@ -153,6 +179,9 @@ private extension PasswordResetViewController {
     @objc
     func clear() {
         emailTextField.text = ""
+        clearButton.isHidden = true
+        resetButton.isEnabled = false
+        resetButton.backgroundColor = UIColor(red: 0.83, green: 0.78, blue: 0.70, alpha: 1.00)
     }
     
     @objc

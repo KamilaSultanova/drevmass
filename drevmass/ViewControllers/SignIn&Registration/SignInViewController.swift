@@ -7,6 +7,8 @@
 import UIKit
 import SnapKit
 import Alamofire
+import SwiftyJSON
+import KeychainSwift
 
 class SignInViewController: UIViewController {
     
@@ -60,6 +62,13 @@ class SignInViewController: UIViewController {
         return imageView
     }()
     
+    private lazy var clearButton: UIButton = {
+        let button = UIButton()
+        button.setImage(UIImage(named: "clear"), for: .normal)
+        button.addTarget(self, action: #selector(clear), for: .touchDown)
+        return button
+    }()
+    
     private lazy var passwordTextField: TextFieldWithPadding = {
         let textfield = TextFieldWithPadding()
 
@@ -110,7 +119,7 @@ class SignInViewController: UIViewController {
         let button = UIButton()
         button.setTitle("Продолжить", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(red: 0.83, green: 0.78, blue: 0.70, alpha: 1.00)
+        button.backgroundColor = .appBeige20
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
@@ -148,12 +157,13 @@ class SignInViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .appBeige100
         setupUI()
         setupConstraints()
+        configureView()
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
         
     private func setupUI() {
-        view.addSubviews(welcomeLabel, greetLabel, passwordIcon, passwordTextField, emailIcon, emailTextField, showButton, enterButton, registerButton, enterLabel, resetPasswordButton)
+        view.addSubviews(welcomeLabel, greetLabel, passwordIcon, passwordTextField, emailIcon, emailTextField, showButton, enterButton, registerButton, enterLabel, resetPasswordButton, clearButton)
     }
     
     private func setupConstraints() {
@@ -176,6 +186,12 @@ class SignInViewController: UIViewController {
         emailIcon.snp.makeConstraints { make in
             make.centerY.equalTo(emailTextField)
             make.left.equalTo(emailTextField.snp.left)
+            make.size.equalTo(24)
+        }
+        
+        clearButton.snp.makeConstraints { make in
+            make.centerY.equalTo(emailTextField)
+            make.right.equalTo(emailTextField.snp.right)
             make.size.equalTo(24)
         }
         
@@ -221,6 +237,23 @@ class SignInViewController: UIViewController {
 }
 
 extension SignInViewController {
+    func configureView(){
+        if emailTextField.state.isEmpty == true{
+            clearButton.isHidden = true
+        }
+        if emailTextField.state.isEmpty || passwordTextField.state.isEmpty {
+            enterButton.isEnabled = false
+            enterButton.backgroundColor = .appBeige20
+        }
+    }
+    
+    @objc
+    func clear() {
+        emailTextField.text = ""
+        clearButton.isHidden = true
+        configureView()
+    }
+    
     @objc
     func keyboardWillAppear() {
         enterButton.snp.remakeConstraints { make in
@@ -246,20 +279,43 @@ extension SignInViewController {
     @objc
     func textEditDidBegin(_ sender: TextFieldWithPadding) {
         sender.bottomBorderColor = .appBeige100
+        if sender == emailTextField {
+            emailIcon.image = .mail
+            if emailTextField.text?.isEmpty == false{
+                clearButton.isHidden = false
+            } else {
+                clearButton.isHidden = true
+            }
+        } else {
+            passwordIcon.image = .lock
+        }
     }
     
     @objc
     func textEditDidEnd(_ sender: TextFieldWithPadding) {
         sender.bottomBorderColor = .appGray50
+        if sender == emailTextField {
+            clearButton.isHidden = true
+        }
     }
     
     @objc
     func textEditDidChanged(_ sender: TextFieldWithPadding) {
+        configureView()
         sender.bottomBorderColor = .appBeige100
         if !emailTextField.text!.isEmpty && !passwordTextField.text!.isEmpty {
             enterButton.backgroundColor = .appBeige100
             enterButton.isEnabled = true
         }
+        
+        if sender == emailTextField {
+            if emailTextField.text!.isEmpty{
+                clearButton.isHidden = true
+            }else{
+                clearButton.isHidden = false
+            }
+        }
+        
         
         switch sender {
         case emailTextField:
@@ -320,11 +376,11 @@ extension SignInViewController {
                     response in
                     switch response.result {
                     case .success:
-                        print("Login success")
+                        KeychainSwift().set(AuthService.shared.token, forKey: "token")
                         self.startApp()
                     case .failure(let error):
                         print(error.localizedDescription)
-                        self.showToast(type: .error, title: error.localizedDescription)
+                        self.showToast(type: .error, title: "Неправильный логин или пароль")
                     }
             }
         }

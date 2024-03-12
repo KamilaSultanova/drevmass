@@ -162,7 +162,7 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
         collectionView.delegate = self
         collectionView.isScrollEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.register(ProductPlateCell.self, forCellWithReuseIdentifier: ProductPlateCell.identifier)
+//        collectionView.register(ProductPlateCell.self, forCellWithReuseIdentifier: ProductPlateCell.identifier)
 
         return collectionView
     }()
@@ -382,12 +382,12 @@ extension LessonViewController: UICollectionViewDataSource, UICollectionViewDele
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ProductPlateCell.identifier, for: indexPath) as? ProductPlateCell else {
-            fatalError("Unable to find a cell with identifier \(ProductPlateCell.identifier)!")
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductPlateCell" , for: indexPath) as? ProductPlateCell else {
+            fatalError("Unable to find a cell with identifier ProductPlateCell!")
         }
 
-        cell.setData(lessonProduct: products[indexPath.row])
-
+//        cell.setData(lessonProduct: products[indexPath.row])
+//
         return cell
     }
 
@@ -396,10 +396,10 @@ extension LessonViewController: UICollectionViewDataSource, UICollectionViewDele
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedProduct = products[indexPath.row]
-        let productDetailVC = ProductDetailViewController(product: nil, lessonProduct: selectedProduct)
+//        let selectedProduct = products[indexPath.row]
+//        let productDetailVC = ProductDetailViewController(product: nil, lessonProduct: selectedProduct)
 
-        navigationController?.pushViewController(productDetailVC, animated: true)
+//        navigationController?.pushViewController(productDetailVC, animated: true)
     }
 }
 

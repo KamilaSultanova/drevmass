@@ -163,18 +163,16 @@ extension OnboardingViewController:  UICollectionViewDelegate, UICollectionViewD
         if touch.x < screenwidth! / 2 {
             if currentPage > 0 {
                 let prevIndexPath = IndexPath(item: currentPage - 1, section: 0)
-                collectionView.scrollToItem(at: prevIndexPath, at: .centeredHorizontally, animated: true)
                 currentPage -= 1
                 self.segmentBar.previousSegment()
+                updateVisibleCells()
             }
         } else {
             if currentPage < arraySlides.count - 1 {
                 let nextIndexPath = IndexPath(item: currentPage + 1, section: 0)
-                collectionView.scrollToItem(at: nextIndexPath, at: .centeredHorizontally, animated: true)
                 currentPage += 1
                 self.segmentBar.nextSegment()
-            } else {
-                register()
+                updateVisibleCells()
             }
         }
     }
@@ -184,19 +182,18 @@ extension OnboardingViewController: SGSegmentedProgressBarDelegate, SGSegmentedP
     func segmentedProgressBarFinished(finishedIndex: Int, isLastIndex: Bool) {
        if currentPage < arraySlides.count - 1 {
            let nextIndexPath = IndexPath(item: currentPage + 1, section: 0)
-           collectionView.scrollToItem(at: nextIndexPath, at: .centeredHorizontally, animated: true)
            currentPage += 1
-       } else {
-           register()
+           updateVisibleCells()
        }
     }
+    
     
     var numberOfSegments: Int {
         return 3
     }
 
     var segmentDuration: TimeInterval {
-        return 5
+        return 3
     }
 
     var paddingBetweenSegments: CGFloat {
@@ -204,7 +201,7 @@ extension OnboardingViewController: SGSegmentedProgressBarDelegate, SGSegmentedP
     }
 
     var trackColor: UIColor {
-        return UIColor.appGray60.withAlphaComponent(0.3)
+        return UIColor.appDark90.withAlphaComponent(0.3)
     }
 
     var progressColor: UIColor {
@@ -213,5 +210,16 @@ extension OnboardingViewController: SGSegmentedProgressBarDelegate, SGSegmentedP
     
     var roundCornerType: SGCornerType {
         return .roundCornerBar(cornerRadious: 1.5)
+    }
+}
+
+extension OnboardingViewController {
+    
+private func updateVisibleCells() {
+        for cell in collectionView.visibleCells {
+            if let slidesCell = cell as? SlidesCollectionViewCell {
+                slidesCell.setData(slide: arraySlides[currentPage])
+            }
+        }
     }
 }
