@@ -6,10 +6,26 @@
 
 import UIKit
 import SnapKit
+import Alamofire
+import KeychainSwift
+import SwiftyJSON
 
-class ProfileViewController: UIViewController {
+class ProfileViewController: UIViewController, UIScrollViewDelegate {
+    
+    var bonus: Bonus?
     
     // MARK: - UI Elements
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+
+        scrollView.delegate = self
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.isScrollEnabled = true
+        
+        return scrollView
+    }()
     
     private lazy var infoView: UIView = {
         let view  = UIView()
@@ -29,7 +45,6 @@ class ProfileViewController: UIViewController {
     
     lazy var nameLabel: UILabel = {
         let label = UILabel()
-        label.text = "Name"
         label.font = .appFont(ofSize: 28, weight: .bold)
         label.textColor = .white
         
@@ -38,7 +53,6 @@ class ProfileViewController: UIViewController {
     
     lazy var numberLabel: UILabel = {
         let label = UILabel()
-        label.text = "888888888"
         label.font = .appFont(ofSize: 15, weight: .semiBold)
         label.textColor = .white
         
@@ -105,36 +119,146 @@ class ProfileViewController: UIViewController {
         return label
     }()
     
-    // MARK: - Lifecycle
+    private lazy var promocodeButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .promocode, rightImage: .CourseButton.arrow, title: "Промокоды")
+        button.layer.cornerRadius = 20
+        button.layer.borderColor = UIColor.appBeige30.cgColor
+        button.layer.borderWidth = 2
+        button.addTarget(self, action: #selector(tapPromocodeButton), for: .touchUpInside)
 
+        return button
+    }()
+    
+    private lazy var dataButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .data, rightImage: .CourseButton.arrow, title: "Мои данные")
+        button.addTarget(self, action: #selector(tapDataButton), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var changePasswordButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .lock, rightImage: .CourseButton.arrow, title: "Сменить пароль")
+        button.addTarget(self, action: #selector(tapPasswordButton), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var notificationButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .notifications, rightImage: .CourseButton.arrow, title: "Уведомления")
+        button.addTarget(self, action: #selector(tapNotificationButton), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var userStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [dataButton, changePasswordButton, notificationButton])
+        stackView.distribution = .fillEqually
+        stackView.axis = .vertical
+        stackView.spacing = 0
+        stackView.layer.cornerRadius = 20
+        stackView.layer.borderColor = UIColor.appBeige30.cgColor
+        stackView.layer.borderWidth = 2
+        return stackView
+    }()
+    
+    private lazy var contactUsButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .contactUs, rightImage: .CourseButton.arrow, title: "Связаться с нами")
+        button.addTarget(self, action: #selector(tapContactButton), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var feedbackButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .star, rightImage: .CourseButton.arrow, title: "Оставить отзыв")
+//        button.addTarget(self, action: #selector(tapBonus), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var infoButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .info.withTintColor(.appBeige100), rightImage: .CourseButton.arrow, title: "Информация")
+        button.addTarget(self, action: #selector(tapInfoButton), for: .touchUpInside)
+
+        return button
+    }()
+    
+    private lazy var clientStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [contactUsButton, feedbackButton, infoButton])
+        stackView.distribution = .fillEqually
+        stackView.axis = .vertical
+        stackView.spacing = 0
+        stackView.layer.cornerRadius = 20
+        stackView.layer.borderColor = UIColor.appBeige30.cgColor
+        stackView.layer.borderWidth = 2
+        return stackView
+    }()
+    
+    private lazy var logoutButton: CustomButton = {
+        let button = CustomButton()
+        button.addTwoImagesButton(leftImage: .logout, rightImage: nil, title: "Выйти")
+        button.setTitleColor(.appGray80, for: .normal)
+        button.addTarget(self, action: #selector(tapLogout), for: .touchUpInside)
+
+        return button
+    }()
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .appBackground
-        navigationController?.isNavigationBarHidden = true
         setupUI()
         setupConstraints()
+        fetchUserInfo()
+        fetchBonus()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.isNavigationBarHidden = true
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        navigationController?.isNavigationBarHidden = false
     }
 }
 
 private extension ProfileViewController {
     func setupUI() {
-        view.addSubviews(infoView, settingsView, nameLabel, numberLabel, gradientView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(infoView)
+        infoView.addSubviews(settingsView, nameLabel, numberLabel, gradientView)
         gradientView.addSubviews(logoImageView, bonusLabel, bonusButton, bonusImageView)
+        settingsView.addSubviews(promocodeButton, userStackView, clientStackView, logoutButton)
     }
     
     func setupConstraints() {
+        scrollView.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.bottom.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+        }
+
         infoView.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview()
-            make.height.equalTo(350)
+            make.horizontalEdges.top.bottom.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView.frameLayoutGuide)
+            make.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide)
         }
         
         settingsView.snp.makeConstraints { make in
-            make.horizontalEdges.bottom.equalToSuperview()
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalTo(infoView.safeAreaLayoutGuide.snp.bottom)
             make.top.equalTo(gradientView.snp.bottom).offset(24)
         }
         
         nameLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(46)
+            make.top.equalTo(infoView.safeAreaLayoutGuide).inset(46)
             make.horizontalEdges.equalToSuperview().inset(16)
         }
         
@@ -172,6 +296,30 @@ private extension ProfileViewController {
             make.right.equalToSuperview().inset(24)
             make.centerY.equalTo(bonusImageView)
         }
+        
+        promocodeButton.snp.makeConstraints { make in
+            make.top.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(64)
+        }
+        
+        userStackView.snp.makeConstraints { make in
+            make.top.equalTo(promocodeButton.snp.bottom).offset(8)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(160)
+        }
+        
+        clientStackView.snp.makeConstraints { make in
+            make.top.equalTo(userStackView.snp.bottom).offset(8)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(160)
+        }
+        
+        logoutButton.snp.makeConstraints { make in
+            make.top.equalTo(clientStackView.snp.bottom).offset(8)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(48)
+            make.bottom.equalToSuperview().inset(32)
+        }
     }
 }
 
@@ -181,4 +329,97 @@ private extension ProfileViewController {
         let myBonusVC = MyBonusViewController()
         navigationController?.pushViewController(myBonusVC, animated: true)
     }
+    
+    @objc
+    func tapPromocodeButton(){
+        let promocodeVC = PromocodeViewController()
+        navigationController?.pushViewController(promocodeVC, animated: true)
+    }
+    
+    @objc
+    func tapDataButton(){
+        let dataVC = DataViewController()
+        navigationController?.pushViewController(dataVC, animated: true)
+    }
+    @objc
+    func tapPasswordButton(){
+        let changePasswordVC = ChangePasswordViewController()
+        navigationController?.pushViewController(changePasswordVC, animated: true)
+    }
+    
+    @objc
+    func tapNotificationButton(){
+        let notificationsVC = NotificationsViewController()
+        navigationController?.pushViewController(notificationsVC, animated: true)
+    }
+    
+    @objc
+    func tapContactButton(){
+        let contactVC = ContactViewController()
+        navigationController?.pushViewController(contactVC, animated: true)
+    }
+    
+    @objc
+    func tapInfoButton(){
+        let infoVC = InformationViewController()
+        navigationController?.pushViewController(infoVC, animated: true)
+    }
+    @objc
+    func tapLogout(){
+        
+    }
 }
+
+private extension ProfileViewController {
+    @objc
+    func fetchUserInfo() {
+        
+            AF.request(Endpoints.user.value, method: .get, headers: [
+                .authorization(bearerToken: AuthService.shared.token)
+            ]).responseData { response in
+                switch response.result {
+                case .success(let data):
+                    let json = JSON(data)
+                    self.nameLabel.text = json["name"].stringValue
+                    self.numberLabel.text = self.formatter(mask: "+X XXX XXX XX XX", phoneNumber: json["phone_number"].stringValue)
+                case .failure(let error):
+                    print(error)
+                    self.showToast(type: .error, title: error.localizedDescription)
+                }
+            }
+    }
+    
+    @objc
+    func fetchBonus() {
+        
+        AF.request(Endpoints.bonus.value, method: .get, headers: [
+            .authorization(bearerToken: AuthService.shared.token)
+        ]).responseDecodable(of: Bonus.self) { response in
+            switch response.result {
+            case .success(let bonus):
+                self.bonusLabel.text = "\(bonus.bonus)"
+            case .failure(let error):
+                print(error)
+                self.showToast(type: .error, title: error.localizedDescription)
+            }
+        }
+    }
+    
+    func formatter(mask: String, phoneNumber: String) -> String{
+        let number = phoneNumber.replacingOccurrences(of: "[^0-9]", with: "", options: .regularExpression)
+        var result: String = ""
+        var index = number.startIndex
+        
+        for character in mask where index < number.endIndex {
+            if character == "X" {
+                result.append(number[index])
+                index = number.index(after: index)
+            } else {
+                result.append(character)
+            }
+        }
+        return result
+    }
+}
+
+

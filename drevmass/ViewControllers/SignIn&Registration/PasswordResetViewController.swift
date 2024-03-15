@@ -206,7 +206,7 @@ private extension PasswordResetViewController {
         to: Endpoints.resetPassword.value,
         method: .post,
         headers: headers
-    ).validate(statusCode: 200..<300).responseJSON {
+    ).validate(statusCode: 200..<300).responseData {
                 response in
                 switch response.result {
                 case .success:

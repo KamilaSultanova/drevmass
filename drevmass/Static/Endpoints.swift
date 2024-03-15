@@ -16,6 +16,10 @@ enum Endpoints {
     case login
     case signUp
     case resetPassword
+    case user
+    case bonus
+    case bonusInfo
+    case promocode
     
     private static let baseURL = "http://185.100.67.103/api/"
     
@@ -49,6 +53,14 @@ enum Endpoints {
             return "signup"
         case .resetPassword:
             return "forgot_password"
+        case .user:
+            return "user"
+        case .bonus:
+            return "bonus"
+        case .bonusInfo:
+            return "bonus/info"
+        case .promocode:
+            return "user/promocode"
         }
     }
     

@@ -9,9 +9,26 @@ import SnapKit
 import Alamofire
 import KeychainSwift
 
-class RegistrationViewController: UIViewController {
+class RegistrationViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - UI Elements
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+
+        scrollView.delegate = self
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.isScrollEnabled = true
+        
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        
+        return view
+    }()
     
     private lazy var registLabel: UILabel = {
         let label = UILabel()
@@ -224,12 +241,27 @@ class RegistrationViewController: UIViewController {
     }
     
     private func setupUI() {
-        view.addSubviews(registLabel, greetLabel, nameTextField, nameIcon, clearNameButton, emailTextField, emailIcon, phoneTextField, phoneIcon, passwordTextField, passwordIcon, showButton, enterLabel, enterButton, continueButton, clearEmailButton, clearPhoneButton)
+        
+        view.addSubview(scrollView )
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(registLabel, greetLabel, nameTextField, nameIcon, clearNameButton, emailTextField, emailIcon, phoneTextField, phoneIcon, passwordTextField, passwordIcon, showButton, clearEmailButton, clearPhoneButton, enterButton, enterLabel, continueButton)
+        
     }
     
     private func setupConstraints() {
+        scrollView.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        contentView.snp.makeConstraints { make in
+            make.horizontalEdges.top.bottom.equalTo(scrollView.contentLayoutGuide)
+            make.width.equalTo(scrollView.frameLayoutGuide)
+            make.height.greaterThanOrEqualTo(scrollView)
+        }
+        
         registLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(12)
+            make.top.equalToSuperview().inset(12)
             make.horizontalEdges.equalToSuperview().inset(32)
         }
         
@@ -346,18 +378,29 @@ class RegistrationViewController: UIViewController {
 
 extension RegistrationViewController {
     @objc
-    func keyboardWillAppear() {
+    func keyboardWillAppear(_ notification: NSNotification) {
+        let userInfo: NSDictionary = notification.userInfo! as NSDictionary
+        let keyboardInfo = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as! NSValue
+            let keyboardSize = keyboardInfo.cgRectValue.size
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+            scrollView.contentInset = contentInsets
+            scrollView.scrollIndicatorInsets = contentInsets
+        
         continueButton.snp.remakeConstraints { make in
             if #available(iOS 15.0, *) {
                 make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-10)
+                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
                 make.height.equalTo(56)
             }
         }
+        
     }
     
     @objc
-    func keyboardWillHide() {
+    func keyboardWillHide(_ notification: NSNotification) {
+        scrollView.contentInset = UIEdgeInsets.zero
+        scrollView.scrollIndicatorInsets = UIEdgeInsets.zero
+        
         continueButton.snp.remakeConstraints { make in
             if #available(iOS 15.0, *) {
                 make.horizontalEdges.equalToSuperview().inset(32)
@@ -528,12 +571,12 @@ extension RegistrationViewController {
                 .authorization(bearerToken: "\(AuthService.shared.token)")
             ]
             
-            AF.request(Endpoints.signUp.value, method: .post, parameters: parameters,encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200..<300).responseJSON {
+            AF.request(Endpoints.signUp.value, method: .post, parameters: parameters,encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200..<300).responseData {
                     response in
                     switch response.result {
                     case .success:
                         KeychainSwift().set(AuthService.shared.token, forKey: "token")
-                        self.startApp()
+                        self.showToast(type: .success, title: "Письмо с потдверждением отправлено на почту")
                     case .failure(let error):
                         print(error.localizedDescription)
                         self.showToast(type: .error, title: error.localizedDescription)
@@ -576,3 +619,4 @@ extension RegistrationViewController : UITextFieldDelegate {
         return result
     }
 }
+

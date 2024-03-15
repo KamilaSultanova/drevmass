@@ -69,6 +69,18 @@
 		8F3148A82BA03FAD00DE99FE /* CatalogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3148A72BA03FAD00DE99FE /* CatalogViewController.swift */; };
 		8F3148AC2BA0401C00DE99FE /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3148AB2BA0401C00DE99FE /* CartViewController.swift */; };
 		8F3148AF2BA0416100DE99FE /* ProductPlateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3148AE2BA0416100DE99FE /* ProductPlateCell.swift */; };
+		8F55EF512BA0EEB700514BCE /* InfoBonusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF502BA0EEB700514BCE /* InfoBonusViewController.swift */; };
+		8F55EF532BA2150C00514BCE /* CustomButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF522BA2150C00514BCE /* CustomButton.swift */; };
+		8F55EF552BA22C9200514BCE /* Bonus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF542BA22C9200514BCE /* Bonus.swift */; };
+		8F55EF582BA2D38900514BCE /* PromocodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF572BA2D38900514BCE /* PromocodeViewController.swift */; };
+		8F55EF5A2BA2D42F00514BCE /* DataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF592BA2D42F00514BCE /* DataViewController.swift */; };
+		8F55EF5C2BA2D47600514BCE /* ChangePasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF5B2BA2D47600514BCE /* ChangePasswordViewController.swift */; };
+		8F55EF5E2BA2D49200514BCE /* NotificationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF5D2BA2D49200514BCE /* NotificationsViewController.swift */; };
+		8F55EF602BA2D4AB00514BCE /* ContactViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF5F2BA2D4AB00514BCE /* ContactViewController.swift */; };
+		8F55EF622BA2D4EA00514BCE /* InformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF612BA2D4EA00514BCE /* InformationViewController.swift */; };
+		8F55EF652BA2ED5700514BCE /* BonusTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF642BA2ED5700514BCE /* BonusTableViewCell.swift */; };
+		8F55EF672BA41E8500514BCE /* EnterPromocodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF662BA41E8400514BCE /* EnterPromocodeViewController.swift */; };
+		8F55EF692BA4475600514BCE /* Promocode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF682BA4475600514BCE /* Promocode.swift */; };
 		9C84960395768DC4EA477185 /* Pods_drevmass_drevmassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97DDF01AF1D9827DB0BF5BA /* Pods_drevmass_drevmassUITests.framework */; };
 		FDC60C24CF0D5AFF5F09C777 /* Pods_drevmassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */; };
 /* End PBXBuildFile section */
@@ -156,6 +168,18 @@
 		8F3148A72BA03FAD00DE99FE /* CatalogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogViewController.swift; sourceTree = "<group>"; };
 		8F3148AB2BA0401C00DE99FE /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
 		8F3148AE2BA0416100DE99FE /* ProductPlateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductPlateCell.swift; sourceTree = "<group>"; };
+		8F55EF502BA0EEB700514BCE /* InfoBonusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoBonusViewController.swift; sourceTree = "<group>"; };
+		8F55EF522BA2150C00514BCE /* CustomButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButton.swift; sourceTree = "<group>"; };
+		8F55EF542BA22C9200514BCE /* Bonus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bonus.swift; sourceTree = "<group>"; };
+		8F55EF572BA2D38900514BCE /* PromocodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromocodeViewController.swift; sourceTree = "<group>"; };
+		8F55EF592BA2D42F00514BCE /* DataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewController.swift; sourceTree = "<group>"; };
+		8F55EF5B2BA2D47600514BCE /* ChangePasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewController.swift; sourceTree = "<group>"; };
+		8F55EF5D2BA2D49200514BCE /* NotificationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewController.swift; sourceTree = "<group>"; };
+		8F55EF5F2BA2D4AB00514BCE /* ContactViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactViewController.swift; sourceTree = "<group>"; };
+		8F55EF612BA2D4EA00514BCE /* InformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationViewController.swift; sourceTree = "<group>"; };
+		8F55EF642BA2ED5700514BCE /* BonusTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BonusTableViewCell.swift; sourceTree = "<group>"; };
+		8F55EF662BA41E8400514BCE /* EnterPromocodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPromocodeViewController.swift; sourceTree = "<group>"; };
+		8F55EF682BA4475600514BCE /* Promocode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promocode.swift; sourceTree = "<group>"; };
 		9BD710C3EBA6F3DD74C1DACD /* Pods-drevmass-drevmassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass-drevmassUITests.debug.xcconfig"; path = "Target Support Files/Pods-drevmass-drevmassUITests/Pods-drevmass-drevmassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_drevmassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00065587FC929683F9DBE14 /* Pods-drevmass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass.debug.xcconfig"; path = "Target Support Files/Pods-drevmass/Pods-drevmass.debug.xcconfig"; sourceTree = "<group>"; };
@@ -280,6 +304,7 @@
 				8F11CE422B9E4403007C7FDB /* UILabel+Extension.swift */,
 				8F3148A22B9EFE2B00DE99FE /* GradientView.swift */,
 				8F11CE452B9E4403007C7FDB /* UIView+Extension.swift */,
+				8F55EF522BA2150C00514BCE /* CustomButton.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -325,6 +350,8 @@
 				8F11CF9B2B9E4621007C7FDB /* CourseDetail.swift */,
 				8F11CF9C2B9E4621007C7FDB /* Favorite.swift */,
 				8F11CF9D2B9E4621007C7FDB /* Banner.swift */,
+				8F55EF542BA22C9200514BCE /* Bonus.swift */,
+				8F55EF682BA4475600514BCE /* Promocode.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -420,6 +447,8 @@
 		8F11CFF32B9E47CA007C7FDB /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				8F55EF632BA2ED3D00514BCE /* Cells */,
+				8F55EF562BA2D36800514BCE /* Views */,
 				8F11CFF42B9E47CA007C7FDB /* ProfileViewController.swift */,
 				8F3148A42B9F441400DE99FE /* MyBonusViewController.swift */,
 			);
@@ -447,6 +476,29 @@
 			isa = PBXGroup;
 			children = (
 				8F3148AE2BA0416100DE99FE /* ProductPlateCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		8F55EF562BA2D36800514BCE /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF502BA0EEB700514BCE /* InfoBonusViewController.swift */,
+				8F55EF572BA2D38900514BCE /* PromocodeViewController.swift */,
+				8F55EF662BA41E8400514BCE /* EnterPromocodeViewController.swift */,
+				8F55EF592BA2D42F00514BCE /* DataViewController.swift */,
+				8F55EF5B2BA2D47600514BCE /* ChangePasswordViewController.swift */,
+				8F55EF5D2BA2D49200514BCE /* NotificationsViewController.swift */,
+				8F55EF5F2BA2D4AB00514BCE /* ContactViewController.swift */,
+				8F55EF612BA2D4EA00514BCE /* InformationViewController.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		8F55EF632BA2ED3D00514BCE /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF642BA2ED5700514BCE /* BonusTableViewCell.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -726,16 +778,20 @@
 			files = (
 				8F11CFBA2B9E46D3007C7FDB /* SignInViewController.swift in Sources */,
 				8F11CFDA2B9E4757007C7FDB /* CoursesViewController.swift in Sources */,
+				8F55EF602BA2D4AB00514BCE /* ContactViewController.swift in Sources */,
 				8F3148A52B9F441400DE99FE /* MyBonusViewController.swift in Sources */,
 				8F11CFF72B9E4804007C7FDB /* TabBarController.swift in Sources */,
 				8F11CF4F2B9E44B8007C7FDB /* UIViewController+Toast.swift in Sources */,
 				8F11CE472B9E4403007C7FDB /* UILabel+Extension.swift in Sources */,
+				8F55EF652BA2ED5700514BCE /* BonusTableViewCell.swift in Sources */,
 				8F11CFB72B9E46D3007C7FDB /* EmailAlertViewController.swift in Sources */,
 				8F11CFE22B9E4757007C7FDB /* CalendarView.swift in Sources */,
 				8F11CE4A2B9E4403007C7FDB /* UIView+Extension.swift in Sources */,
 				8F11CE492B9E4403007C7FDB /* TextFieldWithPadding.swift in Sources */,
 				8F11CFB12B9E46B9007C7FDB /* SlidesCollectionViewCell.swift in Sources */,
 				8F11CFF52B9E47CA007C7FDB /* ProfileViewController.swift in Sources */,
+				8F55EF692BA4475600514BCE /* Promocode.swift in Sources */,
+				8F55EF672BA41E8500514BCE /* EnterPromocodeViewController.swift in Sources */,
 				8F11CFB02B9E46B9007C7FDB /* OnboardingViewController.swift in Sources */,
 				8F11CFB82B9E46D3007C7FDB /* PasswordResetViewController.swift in Sources */,
 				8F11CE102B9E420A007C7FDB /* AppDelegate.swift in Sources */,
@@ -746,6 +802,7 @@
 				8F3148A32B9EFE2B00DE99FE /* GradientView.swift in Sources */,
 				8F11CFD52B9E4757007C7FDB /* BookmarkTableViewCell.swift in Sources */,
 				8F11CFD72B9E4757007C7FDB /* BannerCollectionViewCell.swift in Sources */,
+				8F55EF512BA0EEB700514BCE /* InfoBonusViewController.swift in Sources */,
 				8F11CF4D2B9E44B8007C7FDB /* NSObject+Extension.swift in Sources */,
 				8F11CF0A2B9E44B8007C7FDB /* SelfSizingTableView.swift in Sources */,
 				8F11CFE02B9E4757007C7FDB /* TimeViewController.swift in Sources */,
@@ -756,6 +813,7 @@
 				8F11CFE12B9E4757007C7FDB /* LessonCellProtocol.swift in Sources */,
 				8F11CFAA2B9E4657007C7FDB /* Constants.swift in Sources */,
 				8F11CE122B9E420A007C7FDB /* SceneDelegate.swift in Sources */,
+				8F55EF5C2BA2D47600514BCE /* ChangePasswordViewController.swift in Sources */,
 				8F11CF082B9E44B8007C7FDB /* SelfSizingCollectionView.swift in Sources */,
 				8F11CFA32B9E4621007C7FDB /* Banner.swift in Sources */,
 				8F11CF092B9E44B8007C7FDB /* ToastView.swift in Sources */,
@@ -768,8 +826,14 @@
 				8F11CFA22B9E4621007C7FDB /* Favorite.swift in Sources */,
 				8F11CFDF2B9E4757007C7FDB /* CourseDetailViewController.swift in Sources */,
 				8F11CFD82B9E4757007C7FDB /* MarkedLessonCollectionViewCell.swift in Sources */,
+				8F55EF552BA22C9200514BCE /* Bonus.swift in Sources */,
+				8F55EF5E2BA2D49200514BCE /* NotificationsViewController.swift in Sources */,
+				8F55EF5A2BA2D42F00514BCE /* DataViewController.swift in Sources */,
 				8F11CFD62B9E4757007C7FDB /* LessonTableViewCell.swift in Sources */,
+				8F55EF622BA2D4EA00514BCE /* InformationViewController.swift in Sources */,
 				8F11CFD92B9E4757007C7FDB /* CourseTableViewCell.swift in Sources */,
+				8F55EF532BA2150C00514BCE /* CustomButton.swift in Sources */,
+				8F55EF582BA2D38900514BCE /* PromocodeViewController.swift in Sources */,
 				8F11CFA12B9E4621007C7FDB /* CourseDetail.swift in Sources */,
 				8F11CFDB2B9E4757007C7FDB /* LessonViewController.swift in Sources */,
 				8F11CF4E2B9E44B8007C7FDB /* Numeric+Extension.swift in Sources */,

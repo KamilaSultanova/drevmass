@@ -13,7 +13,7 @@ import KeychainSwift
 class SignInViewController: UIViewController {
     
     // MARK: - UI Elements
-    
+        
     private lazy var welcomeLabel: UILabel = {
         let label = UILabel()
         label.text = "С возвращением!"
@@ -372,11 +372,14 @@ extension SignInViewController {
                 .authorization(bearerToken: "\(AuthService.shared.token)")
             ]
             
-            AF.request(Endpoints.login.value, method: .post, parameters: parameters,encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200..<300).responseJSON {
+            AF.request(Endpoints.login.value, method: .post, parameters: parameters,encoding: JSONEncoding.default, headers: headers).validate(statusCode: 200..<300).responseData {
                     response in
                     switch response.result {
-                    case .success:
-                        KeychainSwift().set(AuthService.shared.token, forKey: "token")
+                    case .success(let data):
+                        let json = JSON(data)
+                        if let token = json["access_token"].string{
+                            AuthService.shared.token = token
+                        }
                         self.startApp()
                     case .failure(let error):
                         print(error.localizedDescription)
