@@ -383,6 +383,10 @@ extension SignInViewController {
                         self.startApp()
                     case .failure(let error):
                         print(error.localizedDescription)
+                        self.emailTextField.bottomBorderColor = .red
+                        self.emailIcon.image = .mail.withTintColor(.red)
+                        self.passwordTextField.bottomBorderColor = .red
+                        self.passwordIcon.image = .lock.withTintColor(.red)
                         self.showToast(type: .error, title: "Неправильный логин или пароль")
                     }
             }

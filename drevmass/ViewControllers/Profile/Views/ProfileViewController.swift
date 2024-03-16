@@ -10,6 +10,7 @@ import Alamofire
 import KeychainSwift
 import SwiftyJSON
 
+
 class ProfileViewController: UIViewController, UIScrollViewDelegate {
     
     var bonus: Bonus?
@@ -339,6 +340,7 @@ private extension ProfileViewController {
     @objc
     func tapDataButton(){
         let dataVC = DataViewController()
+        dataVC.delegate = self 
         navigationController?.pushViewController(dataVC, animated: true)
     }
     @objc
@@ -366,7 +368,20 @@ private extension ProfileViewController {
     }
     @objc
     func tapLogout(){
-        
+        let alertController = UIAlertController(title: nil, message: "Вы действительно хотите выйти?", preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Остаться", style: .default, handler: nil)
+        alertController.addAction(cancelAction)
+        let logoutAction = UIAlertAction(title: "Выйти", style: .destructive) { _ in
+
+            KeychainSwift().clear()
+            let onboardingVC = OnboardingViewController()
+            let rootVC = UINavigationController(rootViewController: onboardingVC)
+            UIApplication.shared.windows.first?.rootViewController = rootVC
+            UIApplication.shared.windows.first?.makeKeyAndVisible()
+           
+        }
+        alertController.addAction(logoutAction)
+        present(alertController, animated: true, completion: nil)
     }
 }
 
@@ -419,6 +434,11 @@ private extension ProfileViewController {
             }
         }
         return result
+    }
+}
+extension ProfileViewController: DataViewControllerDelegate {
+    func didUpdateProfileData() {
+        fetchUserInfo()
     }
 }
 
