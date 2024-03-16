@@ -490,7 +490,7 @@
 				8F11CFF42B9E47CA007C7FDB /* ProfileViewController.swift */,
 				8F55EF6B2BA44F7C00514BCE /* Bonus */,
 				8F55EF6A2BA44F6400514BCE /* Promocode */,
-				8F55EF592BA2D42F00514BCE /* DataViewController.swift */,
+				8F55EF702BA59FC600514BCE /* PersonalData */,
 				8F55EF5B2BA2D47600514BCE /* ChangePasswordViewController.swift */,
 				8F55EF5D2BA2D49200514BCE /* NotificationsViewController.swift */,
 				8F55EF5F2BA2D4AB00514BCE /* ContactViewController.swift */,
@@ -523,6 +523,14 @@
 				8F55EF502BA0EEB700514BCE /* InfoBonusViewController.swift */,
 			);
 			path = Bonus;
+			sourceTree = "<group>";
+		};
+		8F55EF702BA59FC600514BCE /* PersonalData */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF592BA2D42F00514BCE /* DataViewController.swift */,
+			);
+			path = PersonalData;
 			sourceTree = "<group>";
 		};
 		CF6BCB3FFA4F490CC50D92C8 /* Pods */ = {

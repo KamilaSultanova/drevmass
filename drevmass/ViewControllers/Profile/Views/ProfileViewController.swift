@@ -346,7 +346,7 @@ private extension ProfileViewController {
     @objc
     func tapPasswordButton(){
         let changePasswordVC = ChangePasswordViewController()
-        navigationController?.pushViewController(changePasswordVC, animated: true)
+        present(UINavigationController(rootViewController: changePasswordVC), animated: true)
     }
     
     @objc
