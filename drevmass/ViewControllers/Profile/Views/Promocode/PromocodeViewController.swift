@@ -210,13 +210,13 @@ class PromocodeViewController: UIViewController {
 }
 
 private extension PromocodeViewController {
-    func setupUI(){
+    private func setupUI(){
         view.addSubviews(promocodeView, bonusInfoView, bonusInfoLabel, promocodeButton, promocodeImageView, noPromocodeLabel, instructionsLabel)
         promocodeView.addSubviews(mainLabel, descriptionLabel, promocodeLabel, lineImageView, shareButton, copyButton, shareView)
         shareView.addSubviews(sharedLabel, usedAttempedLabel, allAttemptLabel)
     }
     
-    func setupConstraints(){
+    private func setupConstraints(){
         promocodeView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(16)
             make.horizontalEdges.equalToSuperview().inset(16)
@@ -321,9 +321,6 @@ private extension PromocodeViewController {
     }
     
     func configureViews(){
-//        promocodeView.isHidden = true
-//        bonusInfoView.isHidden = true
-//        bonusInfoLabel.isHidden = true
         promocodeImageView.isHidden = true
         noPromocodeLabel.isHidden = true
         instructionsLabel.isHidden = true
@@ -340,7 +337,7 @@ private extension PromocodeViewController {
     
     @objc
     func shareButtonTapped(){
-        let text = "Скачай приложение Drevmass"
+        let text = "Скачай приложение Drevmass и получи бонус 2500 рублей по промокоду: \(promocodeLabel.text ?? "") в приложении!"
         let image = UIImageView(image: .logoDrevmass)
 
         let activityViewController = UIActivityViewController(

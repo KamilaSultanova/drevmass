@@ -12,7 +12,7 @@ class CustomButton: UIButton {
     
     func addTwoImagesButton(leftImage: UIImage?, rightImage: UIImage?, title: String?) {
         setTitle(title, for: .normal)
-        setTitleColor(.appDark90, for: .normal)
+        setTitleColor(.appDark100, for: .normal)
         titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
         contentVerticalAlignment = .center
         contentHorizontalAlignment = .left

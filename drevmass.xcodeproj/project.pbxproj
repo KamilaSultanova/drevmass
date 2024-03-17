@@ -82,7 +82,10 @@
 		8F55EF672BA41E8500514BCE /* EnterPromocodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF662BA41E8400514BCE /* EnterPromocodeViewController.swift */; };
 		8F55EF692BA4475600514BCE /* Promocode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF682BA4475600514BCE /* Promocode.swift */; };
 		8F55EF6D2BA4B61000514BCE /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF6C2BA4B61000514BCE /* User.swift */; };
-		8F55EF6F2BA5878500514BCE /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF6E2BA5878500514BCE /* Protocol.swift */; };
+		8F55EF6F2BA5878500514BCE /* DataViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF6E2BA5878500514BCE /* DataViewProtocol.swift */; };
+		8F55EF752BA63B1A00514BCE /* CompanyInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF742BA63B1A00514BCE /* CompanyInformationViewController.swift */; };
+		8F55EF772BA63B2900514BCE /* AppInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF762BA63B2900514BCE /* AppInformationViewController.swift */; };
+		8F55EF7E2BA7604300514BCE /* SupportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F55EF7D2BA7604300514BCE /* SupportViewController.swift */; };
 		9C84960395768DC4EA477185 /* Pods_drevmass_drevmassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97DDF01AF1D9827DB0BF5BA /* Pods_drevmass_drevmassUITests.framework */; };
 		FDC60C24CF0D5AFF5F09C777 /* Pods_drevmassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */; };
 /* End PBXBuildFile section */
@@ -183,7 +186,10 @@
 		8F55EF662BA41E8400514BCE /* EnterPromocodeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnterPromocodeViewController.swift; sourceTree = "<group>"; };
 		8F55EF682BA4475600514BCE /* Promocode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promocode.swift; sourceTree = "<group>"; };
 		8F55EF6C2BA4B61000514BCE /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		8F55EF6E2BA5878500514BCE /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		8F55EF6E2BA5878500514BCE /* DataViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataViewProtocol.swift; sourceTree = "<group>"; };
+		8F55EF742BA63B1A00514BCE /* CompanyInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanyInformationViewController.swift; sourceTree = "<group>"; };
+		8F55EF762BA63B2900514BCE /* AppInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInformationViewController.swift; sourceTree = "<group>"; };
+		8F55EF7D2BA7604300514BCE /* SupportViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportViewController.swift; sourceTree = "<group>"; };
 		9BD710C3EBA6F3DD74C1DACD /* Pods-drevmass-drevmassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass-drevmassUITests.debug.xcconfig"; path = "Target Support Files/Pods-drevmass-drevmassUITests/Pods-drevmass-drevmassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_drevmassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00065587FC929683F9DBE14 /* Pods-drevmass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass.debug.xcconfig"; path = "Target Support Files/Pods-drevmass/Pods-drevmass.debug.xcconfig"; sourceTree = "<group>"; };
@@ -374,7 +380,6 @@
 			children = (
 				8F11CFA82B9E4657007C7FDB /* Constants.swift */,
 				8F11CFA92B9E4657007C7FDB /* Endpoints.swift */,
-				8F55EF6E2BA5878500514BCE /* Protocol.swift */,
 			);
 			path = Static;
 			sourceTree = "<group>";
@@ -382,9 +387,9 @@
 		8F11CFAC2B9E466C007C7FDB /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				8F11CFF62B9E4804007C7FDB /* TabBarController.swift */,
 				8F3148A92BA0400800DE99FE /* Cart */,
 				8F3148A62BA03F9B00DE99FE /* Catalog */,
-				8F11CFF62B9E4804007C7FDB /* TabBarController.swift */,
 				8F11CFAD2B9E46B9007C7FDB /* Onboarding */,
 				8F11CFB22B9E46D3007C7FDB /* SignIn&Registration */,
 				8F11CFF32B9E47CA007C7FDB /* Profile */,
@@ -491,10 +496,10 @@
 				8F55EF6B2BA44F7C00514BCE /* Bonus */,
 				8F55EF6A2BA44F6400514BCE /* Promocode */,
 				8F55EF702BA59FC600514BCE /* PersonalData */,
-				8F55EF5B2BA2D47600514BCE /* ChangePasswordViewController.swift */,
-				8F55EF5D2BA2D49200514BCE /* NotificationsViewController.swift */,
-				8F55EF5F2BA2D4AB00514BCE /* ContactViewController.swift */,
-				8F55EF612BA2D4EA00514BCE /* InformationViewController.swift */,
+				8F55EF712BA61A9A00514BCE /* PasswordReset */,
+				8F55EF722BA61AF000514BCE /* Notifications */,
+				8F55EF782BA72D2700514BCE /* Contacts */,
+				8F55EF732BA63AFC00514BCE /* Information */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -529,8 +534,44 @@
 			isa = PBXGroup;
 			children = (
 				8F55EF592BA2D42F00514BCE /* DataViewController.swift */,
+				8F55EF6E2BA5878500514BCE /* DataViewProtocol.swift */,
 			);
 			path = PersonalData;
+			sourceTree = "<group>";
+		};
+		8F55EF712BA61A9A00514BCE /* PasswordReset */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF5B2BA2D47600514BCE /* ChangePasswordViewController.swift */,
+			);
+			path = PasswordReset;
+			sourceTree = "<group>";
+		};
+		8F55EF722BA61AF000514BCE /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF5D2BA2D49200514BCE /* NotificationsViewController.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		8F55EF732BA63AFC00514BCE /* Information */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF612BA2D4EA00514BCE /* InformationViewController.swift */,
+				8F55EF742BA63B1A00514BCE /* CompanyInformationViewController.swift */,
+				8F55EF762BA63B2900514BCE /* AppInformationViewController.swift */,
+			);
+			path = Information;
+			sourceTree = "<group>";
+		};
+		8F55EF782BA72D2700514BCE /* Contacts */ = {
+			isa = PBXGroup;
+			children = (
+				8F55EF5F2BA2D4AB00514BCE /* ContactViewController.swift */,
+				8F55EF7D2BA7604300514BCE /* SupportViewController.swift */,
+			);
+			path = Contacts;
 			sourceTree = "<group>";
 		};
 		CF6BCB3FFA4F490CC50D92C8 /* Pods */ = {
@@ -808,6 +849,7 @@
 			files = (
 				8F11CFBA2B9E46D3007C7FDB /* SignInViewController.swift in Sources */,
 				8F11CFDA2B9E4757007C7FDB /* CoursesViewController.swift in Sources */,
+				8F55EF7E2BA7604300514BCE /* SupportViewController.swift in Sources */,
 				8F55EF602BA2D4AB00514BCE /* ContactViewController.swift in Sources */,
 				8F3148A52B9F441400DE99FE /* MyBonusViewController.swift in Sources */,
 				8F55EF6D2BA4B61000514BCE /* User.swift in Sources */,
@@ -815,6 +857,7 @@
 				8F11CF4F2B9E44B8007C7FDB /* UIViewController+Toast.swift in Sources */,
 				8F11CE472B9E4403007C7FDB /* UILabel+Extension.swift in Sources */,
 				8F55EF652BA2ED5700514BCE /* BonusTableViewCell.swift in Sources */,
+				8F55EF772BA63B2900514BCE /* AppInformationViewController.swift in Sources */,
 				8F11CFB72B9E46D3007C7FDB /* EmailAlertViewController.swift in Sources */,
 				8F11CFE22B9E4757007C7FDB /* CalendarView.swift in Sources */,
 				8F11CE4A2B9E4403007C7FDB /* UIView+Extension.swift in Sources */,
@@ -835,6 +878,7 @@
 				8F11CFD72B9E4757007C7FDB /* BannerCollectionViewCell.swift in Sources */,
 				8F55EF512BA0EEB700514BCE /* InfoBonusViewController.swift in Sources */,
 				8F11CF4D2B9E44B8007C7FDB /* NSObject+Extension.swift in Sources */,
+				8F55EF752BA63B1A00514BCE /* CompanyInformationViewController.swift in Sources */,
 				8F11CF0A2B9E44B8007C7FDB /* SelfSizingTableView.swift in Sources */,
 				8F11CFE02B9E4757007C7FDB /* TimeViewController.swift in Sources */,
 				8F11CFAB2B9E4657007C7FDB /* Endpoints.swift in Sources */,
@@ -865,7 +909,7 @@
 				8F11CFD92B9E4757007C7FDB /* CourseTableViewCell.swift in Sources */,
 				8F55EF532BA2150C00514BCE /* CustomButton.swift in Sources */,
 				8F55EF582BA2D38900514BCE /* PromocodeViewController.swift in Sources */,
-				8F55EF6F2BA5878500514BCE /* Protocol.swift in Sources */,
+				8F55EF6F2BA5878500514BCE /* DataViewProtocol.swift in Sources */,
 				8F11CFA12B9E4621007C7FDB /* CourseDetail.swift in Sources */,
 				8F11CFDB2B9E4757007C7FDB /* LessonViewController.swift in Sources */,
 				8F11CF4E2B9E44B8007C7FDB /* Numeric+Extension.swift in Sources */,
@@ -968,7 +1012,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1026,7 +1070,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

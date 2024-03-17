@@ -66,7 +66,7 @@ class MyBonusViewController: UIViewController, UIScrollViewDelegate {
     private lazy var bonusLabel: UILabel = {
         let label = UILabel()
         label.text = "0"
-        label.font = .appFont(ofSize: 28, weight: .bold)
+        label.font = .appFont(ofSize: 34, weight: .bold)
         label.textColor = .white
         
         return label
@@ -165,6 +165,7 @@ class MyBonusViewController: UIViewController, UIScrollViewDelegate {
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
         tableView.register(BonusTableViewCell.self, forCellReuseIdentifier: "BonusCell")
+        tableView.isUserInteractionEnabled = false
 
         return tableView
     }()

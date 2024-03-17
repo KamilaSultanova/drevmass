@@ -63,8 +63,9 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
         button.setTitle("Применить", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .appBeige100
-        button.layer.cornerRadius = 25
+        button.layer.cornerRadius = 24
         button.clipsToBounds = true
+        button.heightAnchor.constraint(equalToConstant: 48)
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
 //        button.addTarget(self, action: #selector(alert), for: .touchDown)
         return button
@@ -105,7 +106,6 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
             make.top.equalTo(promocodeTextField.snp.bottom).offset(24)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.horizontalEdges.equalToSuperview().inset(24)
-            make.height.equalTo(56)
         }
     }
 }

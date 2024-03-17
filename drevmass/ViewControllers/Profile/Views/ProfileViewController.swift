@@ -358,7 +358,10 @@ private extension ProfileViewController {
     @objc
     func tapContactButton(){
         let contactVC = ContactViewController()
-        navigationController?.pushViewController(contactVC, animated: true)
+        contactVC.onMessageSent = { [weak self] in
+            self?.dismiss(animated: true, completion: nil)
+        }
+        presentPanModal(contactVC)
     }
     
     @objc

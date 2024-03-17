@@ -359,7 +359,7 @@ private extension ChangePasswordViewController{
                     self.dismiss(animated: true)
                     
                 }else {
-                    self.showToast(type: .error, title: "Пароли не совпадают")
+                    self.showToast(type: .error, title: "Пароли неверен")
                     if currentPasswordTextField.text!.isEmpty {
                         currentPasswordTextField.bottomBorderColor = .red
                     }

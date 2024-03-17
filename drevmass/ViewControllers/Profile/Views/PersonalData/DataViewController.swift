@@ -78,6 +78,7 @@ class DataViewController: UIViewController, UIScrollViewDelegate{
         textfield.autocorrectionType = .no
         textfield.keyboardType = .phonePad
         textfield.delegate = self
+       
         textfield.padding = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         let placeholderAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.appGray60,
@@ -313,11 +314,11 @@ class DataViewController: UIViewController, UIScrollViewDelegate{
     }()
     
     private lazy var heightPickerView: UIPickerView = {
-            let pickerView = UIPickerView()
-            pickerView.delegate = self
-            pickerView.dataSource = self
-            return pickerView
-        }()
+         let pickerView = UIPickerView()
+         pickerView.delegate = self
+         pickerView.dataSource = self
+         return pickerView
+     }()
         
     private lazy var weightPickerView: UIPickerView = {
         let pickerView = UIPickerView()
@@ -371,6 +372,7 @@ class DataViewController: UIViewController, UIScrollViewDelegate{
         textfieldSetupDoneButton()
         heightTextField.inputView = heightPickerView
         weightTextField.inputView = weightPickerView
+
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
@@ -751,7 +753,8 @@ private extension DataViewController{
    
    @objc
    func deleteTapped(){
-       let alertController = UIAlertController(title: nil, message: "Вы уверены, что хотите удалить аккаунт?", preferredStyle: .alert)
+       let alertController = UIAlertController(title: "Вы уверены, что хотите удалить аккаунт?", message: "Ваши личные данные и накопленные бонусы будут удалены без возможности восстановления.", preferredStyle: .alert)
+   
        let cancelAction = UIAlertAction(title: "Оставить", style: .default, handler: nil)
        alertController.addAction(cancelAction)
        let logoutAction = UIAlertAction(title: "Удалить", style: .destructive) { _ in
