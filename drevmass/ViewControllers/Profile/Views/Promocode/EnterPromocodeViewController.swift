@@ -21,6 +21,8 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
         return nil
     }
     
+    private var keyboardHeight: CGFloat = 0
+    
     private lazy var promocodeTextField: UITextField = {
         let textfield = UITextField()
         
@@ -28,14 +30,14 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
         
         let placeholderAttributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.appGray60,
-            .font: UIFont.appFont(ofSize: 17, weight: .semiBold)
+            .font: UIFont.appFont(ofSize: 20, weight: .semiBold)
         ]
 
         let attributedPlaceholder = NSAttributedString(string: "Введите промокод", attributes: placeholderAttributes)
 
         textfield.attributedPlaceholder = attributedPlaceholder
         textfield.autocorrectionType = .no
-        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: textfield.frame.height))
+        let leftPaddingView = UIView(frame: CGRect(x: 0, y: 0, width: 40, height: 56))
         textfield.leftView = leftPaddingView
         textfield.leftViewMode = .always
 //        textfield.addTarget(self, action: #selector(textEditDidChanged), for: .editingChanged)
@@ -45,8 +47,8 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
     
     private lazy var lineImageView: UIImageView = {
         let image = UIImageView()
-        image.image = .divider.withTintColor(.appBeige100)
-        image.contentMode = .scaleAspectFit
+        image.image = .frame.withTintColor(.appBeige100)
+        image.contentMode = .scaleAspectFill
         
         return image
     }()
@@ -63,9 +65,8 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
         button.setTitle("Применить", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .appBeige100
-        button.layer.cornerRadius = 24
+        button.layer.cornerRadius = 25
         button.clipsToBounds = true
-        button.heightAnchor.constraint(equalToConstant: 48)
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
 //        button.addTarget(self, action: #selector(alert), for: .touchDown)
         return button
@@ -79,6 +80,9 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
         setupUI()
         setupConstraints()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
     }
     func setupUI(){
         view.addSubviews(promocodeTextField, applyButton, promocodeIcon, lineImageView)
@@ -86,8 +90,8 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
     
     func setupConstraints(){
         promocodeTextField.snp.makeConstraints { make in
-            make.top.horizontalEdges.equalToSuperview().inset(24)
-            make.height.equalTo(48)
+            make.top.equalToSuperview().inset(20)
+            make.horizontalEdges.equalToSuperview().inset(24)
         }
         
         lineImageView.snp.makeConstraints { make in
@@ -103,9 +107,22 @@ class EnterPromocodeViewController: UIViewController, PanModalPresentable {
         }
         
         applyButton.snp.makeConstraints { make in
-            make.top.equalTo(promocodeTextField.snp.bottom).offset(24)
+            make.top.equalTo(promocodeTextField.snp.bottom).offset(32)
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(24)
             make.horizontalEdges.equalToSuperview().inset(24)
+            make.height.equalTo(48)
         }
+    }
+}
+
+extension EnterPromocodeViewController {
+    @objc
+    func keyboardWillAppear() {
+
+    }
+    
+    @objc
+    func keyboardWillHide() {
+       
     }
 }

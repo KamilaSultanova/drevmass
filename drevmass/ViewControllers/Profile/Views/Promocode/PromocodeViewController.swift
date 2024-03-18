@@ -62,8 +62,8 @@ class PromocodeViewController: UIViewController {
     
     private lazy var lineImageView: UIImageView = {
         let image = UIImageView()
-        image.image = .divider.withTintColor(.white)
-        image.contentMode = .scaleAspectFit
+        image.image = .frame.withTintColor(.white)
+        image.contentMode = .scaleAspectFill
         
         return image
     }()
@@ -358,7 +358,7 @@ private extension PromocodeViewController {
     @objc
     func copyButtonTapped(){
         let pasteboard = UIPasteboard.general
-            pasteboard.string = promocodeLabel.text
+        pasteboard.string = promocodeLabel.text
         showToast(type: .success, title: "Промокод успешно скопирован")
     }
     
@@ -382,6 +382,14 @@ private extension PromocodeViewController{
                 usedAttempedLabel.text = "\(promocode.used)"
                 allAttemptLabel.text = "/\(promocode.allAtempt)"
                 descriptionLabel.text = "Промокод \(promocode.bonus) бонусов на покупку массажера для двух друзей!*"
+                if promocode.used == promocode.allAtempt{
+                    lineImageView.tintColor = .white.withAlphaComponent(0.6)
+                    promocodeLabel.tintColor = .white.withAlphaComponent(0.6)
+                    shareButton.tintColor = .white.withAlphaComponent(0.6)
+                    shareButton.isEnabled = false
+                    copyButton.tintColor = .white.withAlphaComponent(0.6)
+                    copyButton.isEnabled = false
+                }
             case .failure(let error):
                 print(error)
                 self.showToast(type: .error, title: error.localizedDescription)
