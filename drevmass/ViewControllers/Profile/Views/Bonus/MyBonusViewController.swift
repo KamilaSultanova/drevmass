@@ -334,7 +334,7 @@ extension MyBonusViewController: UITableViewDataSource, UITableViewDelegate {
         }
         
         cell.setData(bonus: bonusArray[indexPath.row])
-        
+        cell.selectionStyle = .none
         return cell
     }
     

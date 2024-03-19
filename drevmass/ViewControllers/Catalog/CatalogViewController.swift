@@ -9,13 +9,22 @@ import UIKit
 import SnapKit
 import Alamofire
 
+
 class CatalogViewController: UIViewController, UIScrollViewDelegate {
-   
-    var productArray: [Product] = []
     
     // MARK: - UI Elements
     
+    enum LayoutType {
+        case gallery
+        case list
+        case plate
+    }
+   
+    var productArray: [Product] = []
+    
     private lazy var currentSortingType: SortingType = .popular
+    
+    private var currentLayoutType: LayoutType = .plate
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -40,10 +49,14 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
     private lazy var sortingButton: UIButton = {
         let button = UIButton()
         
-        button.setTitle("По популярности", for: .normal)
+ 
         button.setImage(.Icons.sortButton.withTintColor(.appGray70), for: .normal)
         button.titleLabel?.font = .appFont(ofSize: 15, weight: .bold)
-        button.setTitleColor(.appDark90, for: .normal)
+        button.setAttributedTitle(NSAttributedString(string: currentSortingType.rawValue, attributes: [
+            .font: UIFont.appFont(ofSize: 15, weight: .semiBold),
+            .foregroundColor: UIColor.appDark90
+        ]), for: .normal)
+
         button.contentHorizontalAlignment = .left
         if #available(iOS 15.0, *) {
             var configuration = UIButton.Configuration.borderless()
@@ -62,7 +75,6 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         let button = UIButton()
         
         button.setImage(.LayoutButton.plate.withTintColor(.appGray70), for: .normal)
-        button.titleLabel?.font = .appFont(ofSize: 15, weight: .bold)
         button.addTarget(self, action: #selector(layoutTapped), for: .touchUpInside)
         
         return button
@@ -86,6 +98,17 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
 
         return collectionView
     }()
+    
+    private lazy var tableView: SelfSizingTableView = {
+        let tableView = SelfSizingTableView()
+
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.isScrollEnabled = false
+        tableView.register(GaleryTableViewCell.self, forCellReuseIdentifier: "GalleryCell")
+        tableView.register(ListTableViewCell.self, forCellReuseIdentifier: "ListCell")
+        return tableView
+    }()
 
     // MARK: - Lifecycle
 
@@ -103,6 +126,7 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         setupUI()
         setupConstraints()
         fetchProducts()
+        configureViews()
     }
 }
 extension CatalogViewController {
@@ -110,7 +134,7 @@ extension CatalogViewController {
         
         view.addSubview(scrollView )
         scrollView.addSubview(contentView)
-        contentView.addSubviews(sortingButton, layoutButton, collectionView)
+        contentView.addSubviews(sortingButton, layoutButton, collectionView, tableView)
         
     }
     
@@ -140,7 +164,27 @@ extension CatalogViewController {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(sortingButton.snp.bottom)
             make.horizontalEdges.equalToSuperview()
-            make.bottom.equalToSuperview().inset(32)
+            make.bottom.equalToSuperview().inset(32).priority(.high)
+        }
+        
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(sortingButton.snp.bottom)
+            make.horizontalEdges.equalToSuperview()
+            make.bottom.equalToSuperview().inset(32).priority(.low)
+        }
+    }
+    
+    func configureViews(){
+        if currentLayoutType == .plate{
+            collectionView.isHidden = false
+            tableView.isHidden = true
+        } else {
+            collectionView.isHidden = true
+            tableView.isHidden = false
+            tableView.separatorStyle = .singleLine
+            if currentLayoutType == .gallery{
+                tableView.separatorStyle = .none
+            }
         }
     }
 }
@@ -149,19 +193,36 @@ extension CatalogViewController: SortingViewControllerDelegate{
     
     func didSelectSortingType(_ sortingType: SortingType) {
         currentSortingType = sortingType
+        sortingButton.setAttributedTitle(NSAttributedString(string: sortingType.rawValue, attributes: [
+            .font: UIFont.appFont(ofSize: 15, weight: .semiBold),
+            .foregroundColor: UIColor.appDark90
+        ]), for: .normal)
         fetchProducts()
     }
     
     @objc
     func sortingTapped() {
         let sortingVC = SortingViewController()
+        sortingVC.selectedSortingType = currentSortingType
         sortingVC.delegate = self
         presentPanModal(sortingVC)
     }
     
     @objc
     func layoutTapped(){
-        
+        switch currentLayoutType {
+            case .plate:
+                currentLayoutType = .gallery
+                layoutButton.setImage(.LayoutButton.gallery.withTintColor(.appGray70), for: .normal)
+            case .gallery:
+                currentLayoutType = .list
+                layoutButton.setImage(.LayoutButton.list.withTintColor(.appGray70), for: .normal)
+            case .list:
+                currentLayoutType = .plate
+                layoutButton.setImage(.LayoutButton.plate.withTintColor(.appGray70), for: .normal)
+            }
+        configureViews()
+        fetchProducts()
     }
 }
 
@@ -172,6 +233,7 @@ extension CatalogViewController {
             case .success(let products):
                 self.productArray = products
                 self.collectionView.reloadData()
+                self.tableView.reloadData()
             case .failure(let error):
                 self.showToast(type: .error)
                 print(error)
@@ -202,4 +264,36 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
         return CGSize(width: width, height: height)
     }
 
+}
+
+extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return productArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if currentLayoutType == .gallery{
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GalleryCell", for: indexPath) as! GaleryTableViewCell
+            
+            cell.setdata(product: productArray[indexPath.row])
+            cell.selectionStyle = .none
+            return cell
+        }
+        
+        if currentLayoutType == .list{
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! ListTableViewCell
+            
+            cell.setdata(product: productArray[indexPath.row])
+            cell.selectionStyle = .none
+            return cell
+        }
+        
+        return UITableViewCell()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
+    
 }

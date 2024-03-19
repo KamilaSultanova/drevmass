@@ -19,6 +19,8 @@ class SortingViewController: UIViewController, PanModalPresentable {
     
     weak var delegate: SortingViewControllerDelegate?
     
+    var selectedSortingType: SortingType = .popular
+    
     private var sortingArray: [SortingType] = [.popular, .lowToHighPrice , .highToLowPrice]
     
     var longFormHeight: PanModalHeight = .intrinsicHeight
@@ -84,11 +86,11 @@ extension SortingViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SortingCell", for: indexPath) as! SortingTableViewCell
         
-        let label = cell.viewWithTag(1001) as! UILabel
         let sortingType = sortingArray[indexPath.row]
         
-        label.text = sortingType.rawValue
-        
+        let isSelected = sortingType == selectedSortingType
+        cell.setData(with: sortingType, selected: isSelected)
+
         cell.selectionStyle = .none
         
         return cell

@@ -12,19 +12,12 @@ class SortingTableViewCell: UITableViewCell {
 
     // MARK: - UI Elements
     
-    override var isSelected: Bool {
-        didSet {
-            updateBorder()
-        }
-    }
-    
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         
         label.font = .appFont(ofSize: 17, weight: .regular)
         label.textColor = .appDark100
         label.textAlignment = .left
-        label.tag = 1001
 
         return label
     }()
@@ -34,11 +27,9 @@ class SortingTableViewCell: UITableViewCell {
         view.layer.cornerRadius = 12
         view.layer.borderWidth = 2
         view.layer.borderColor = UIColor.appBeige50.cgColor
-        view.tag = 1002
         
         return view
     }()
-    
     
     // MARK: - Lifecycle
     
@@ -50,12 +41,6 @@ class SortingTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")}
     
-    
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        updateBorder()
-    }
-
 }
 
 extension SortingTableViewCell {
@@ -74,7 +59,13 @@ extension SortingTableViewCell {
         }
     }
     
-    private func updateBorder() {
+    
+    func setData(with sortingType: SortingType, selected: Bool) {
+            titleLabel.text = sortingType.rawValue
+            updateBorder(isSelected: selected)
+        }
+    
+    func updateBorder(isSelected: Bool) {
         checkView.layer.borderWidth = isSelected ? 6 : 2
         checkView.layer.borderColor = isSelected ? UIColor.appBeige100.cgColor : UIColor.appBeige50.cgColor
     }
