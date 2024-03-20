@@ -4,10 +4,10 @@
 // Copyright © 2023 Drevmass. All rights reserved.
 //
 
-import UIKit
-
-struct ProductProperty {
-    let name: String
-    let value: String
-    let icon: UIImage
-}
+//import UIKit
+//
+//struct ProductProperty {
+//    let name: String
+//    let value: String
+//    let icon: UIImage
+//}

@@ -4,7 +4,8 @@
 // Copyright © 2023 Drevmass. All rights reserved.
 //
 
-struct Product: Decodable {
+struct Product: Decodable, ProductProtocol {
+   
     enum CodingKeys: String, CodingKey {
         case imageUrl = "image_src"
         case price
@@ -20,8 +21,8 @@ struct Product: Decodable {
     let id: Int
     var imageUrl: String 
     let videoId: String
-    let price: Int
-    let name: String
+    var price: Int
+    var name: String
     let description: String
     let height: String
     let size: String

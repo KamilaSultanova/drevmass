@@ -95,7 +95,7 @@ extension ListTableViewCell {
     
     func setdata(product: Product){
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(product.imageUrl)"))
-        priceLabel.text = "\(product.price) ₽"
+        priceLabel.text = "\(product.price.formattedString()) ₽"
         productLabel.text = product.name
     }
 

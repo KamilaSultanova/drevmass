@@ -263,6 +263,11 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
    
         return CGSize(width: width, height: height)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let productDetailVC = ProductViewController(product: productArray[indexPath.row])
+        navigationController?.pushViewController(productDetailVC, animated: true)
+    }
 
 }
 
@@ -294,6 +299,11 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let productDetailVC = ProductViewController(product: productArray[indexPath.row])
+        navigationController?.pushViewController(productDetailVC, animated: true)
     }
     
 }

@@ -90,9 +90,15 @@ extension ProductPlateCell {
         }
     }
     
-    func setdata(product: Product){
+    func setdata(product: ProductProtocol){
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(product.imageUrl)"))
-        priceLabel.text = "\(product.price) ₽"
+        priceLabel.text = "\(product.price.formattedString()) ₽"
         productLabel.text = product.name
     }
+    
+//    func setdata(recommendedProduct: ProductDetail.Recommend){
+//        imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(recommendedProduct.imageUrl)"))
+//        priceLabel.text = "\(recommendedProduct.price.formattedString()) ₽"
+//        productLabel.text = recommendedProduct.name
+//    }
 }

@@ -63,6 +63,8 @@
 		8F11CFE22B9E4757007C7FDB /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F11CFD42B9E4757007C7FDB /* CalendarView.swift */; };
 		8F11CFF52B9E47CA007C7FDB /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F11CFF42B9E47CA007C7FDB /* ProfileViewController.swift */; };
 		8F11CFF72B9E4804007C7FDB /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F11CFF62B9E4804007C7FDB /* TabBarController.swift */; };
+		8F2032062BAAAE6700A82FDD /* ProductDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2032052BAAAE6700A82FDD /* ProductDetail.swift */; };
+		8F2032082BAB63BC00A82FDD /* ProductProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F2032072BAB63BC00A82FDD /* ProductProtocol.swift */; };
 		8F3148A02B9ECA2F00DE99FE /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 8F31489F2B9ECA2F00DE99FE /* SDWebImageSwiftUI */; };
 		8F3148A32B9EFE2B00DE99FE /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3148A22B9EFE2B00DE99FE /* GradientView.swift */; };
 		8F3148A52B9F441400DE99FE /* MyBonusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F3148A42B9F441400DE99FE /* MyBonusViewController.swift */; };
@@ -91,6 +93,7 @@
 		8F6676522BA868CA00183F35 /* SortingType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6676512BA868CA00183F35 /* SortingType.swift */; };
 		8F6676542BA9611900183F35 /* GaleryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6676532BA9611900183F35 /* GaleryTableViewCell.swift */; };
 		8F6676562BA969BB00183F35 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6676552BA969BB00183F35 /* ListTableViewCell.swift */; };
+		8FD8D5D72BAA0C9800DD65AA /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */; };
 		9C84960395768DC4EA477185 /* Pods_drevmass_drevmassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97DDF01AF1D9827DB0BF5BA /* Pods_drevmass_drevmassUITests.framework */; };
 		FDC60C24CF0D5AFF5F09C777 /* Pods_drevmassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */; };
 /* End PBXBuildFile section */
@@ -173,6 +176,8 @@
 		8F11CFD42B9E4757007C7FDB /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		8F11CFF42B9E47CA007C7FDB /* ProfileViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		8F11CFF62B9E4804007C7FDB /* TabBarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
+		8F2032052BAAAE6700A82FDD /* ProductDetail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetail.swift; sourceTree = "<group>"; };
+		8F2032072BAB63BC00A82FDD /* ProductProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductProtocol.swift; sourceTree = "<group>"; };
 		8F3148A22B9EFE2B00DE99FE /* GradientView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		8F3148A42B9F441400DE99FE /* MyBonusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyBonusViewController.swift; sourceTree = "<group>"; };
 		8F3148A72BA03FAD00DE99FE /* CatalogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatalogViewController.swift; sourceTree = "<group>"; };
@@ -200,6 +205,7 @@
 		8F6676512BA868CA00183F35 /* SortingType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingType.swift; sourceTree = "<group>"; };
 		8F6676532BA9611900183F35 /* GaleryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaleryTableViewCell.swift; sourceTree = "<group>"; };
 		8F6676552BA969BB00183F35 /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
+		8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
 		9BD710C3EBA6F3DD74C1DACD /* Pods-drevmass-drevmassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass-drevmassUITests.debug.xcconfig"; path = "Target Support Files/Pods-drevmass-drevmassUITests/Pods-drevmass-drevmassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_drevmassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B00065587FC929683F9DBE14 /* Pods-drevmass.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass.debug.xcconfig"; path = "Target Support Files/Pods-drevmass/Pods-drevmass.debug.xcconfig"; sourceTree = "<group>"; };
@@ -367,6 +373,7 @@
 				8F11CF982B9E4621007C7FDB /* ProductProperty.swift */,
 				8F11CF992B9E4621007C7FDB /* Course.swift */,
 				8F11CF9A2B9E4621007C7FDB /* Product.swift */,
+				8F2032052BAAAE6700A82FDD /* ProductDetail.swift */,
 				8F11CF9B2B9E4621007C7FDB /* CourseDetail.swift */,
 				8F11CF9C2B9E4621007C7FDB /* Favorite.swift */,
 				8F11CF9D2B9E4621007C7FDB /* Banner.swift */,
@@ -479,6 +486,7 @@
 			children = (
 				8F3148A72BA03FAD00DE99FE /* CatalogViewController.swift */,
 				8F66764D2BA81BFA00183F35 /* SortingViewController.swift */,
+				8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */,
 				8F3148AD2BA0412B00DE99FE /* Cells */,
 			);
 			path = Catalog;
@@ -500,6 +508,7 @@
 				8F6676512BA868CA00183F35 /* SortingType.swift */,
 				8F6676532BA9611900183F35 /* GaleryTableViewCell.swift */,
 				8F6676552BA969BB00183F35 /* ListTableViewCell.swift */,
+				8F2032072BAB63BC00A82FDD /* ProductProtocol.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -868,6 +877,7 @@
 				8F55EF602BA2D4AB00514BCE /* ContactViewController.swift in Sources */,
 				8F3148A52B9F441400DE99FE /* MyBonusViewController.swift in Sources */,
 				8F55EF6D2BA4B61000514BCE /* User.swift in Sources */,
+				8FD8D5D72BAA0C9800DD65AA /* ProductViewController.swift in Sources */,
 				8F11CFF72B9E4804007C7FDB /* TabBarController.swift in Sources */,
 				8F11CF4F2B9E44B8007C7FDB /* UIViewController+Toast.swift in Sources */,
 				8F11CE472B9E4403007C7FDB /* UILabel+Extension.swift in Sources */,
@@ -918,6 +928,7 @@
 				8F11CFDE2B9E4757007C7FDB /* AlertViewController.swift in Sources */,
 				8F3148A82BA03FAD00DE99FE /* CatalogViewController.swift in Sources */,
 				8F11CFA22B9E4621007C7FDB /* Favorite.swift in Sources */,
+				8F2032062BAAAE6700A82FDD /* ProductDetail.swift in Sources */,
 				8F11CFDF2B9E4757007C7FDB /* CourseDetailViewController.swift in Sources */,
 				8F11CFD82B9E4757007C7FDB /* MarkedLessonCollectionViewCell.swift in Sources */,
 				8F55EF552BA22C9200514BCE /* Bonus.swift in Sources */,
@@ -929,6 +940,7 @@
 				8F11CFD92B9E4757007C7FDB /* CourseTableViewCell.swift in Sources */,
 				8F55EF532BA2150C00514BCE /* CustomButton.swift in Sources */,
 				8F55EF582BA2D38900514BCE /* PromocodeViewController.swift in Sources */,
+				8F2032082BAB63BC00A82FDD /* ProductProtocol.swift in Sources */,
 				8F55EF6F2BA5878500514BCE /* DataViewProtocol.swift in Sources */,
 				8F11CFA12B9E4621007C7FDB /* CourseDetail.swift in Sources */,
 				8F11CFDB2B9E4757007C7FDB /* LessonViewController.swift in Sources */,

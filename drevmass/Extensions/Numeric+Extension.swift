@@ -10,6 +10,9 @@ extension Numeric {
     func formattedString(style: NumberFormatter.Style = .decimal) -> String {
         let formatter = NumberFormatter()
         formatter.numberStyle = style
+        formatter.locale = Locale(identifier: "ru_RU")
+        
         return formatter.string(from: self as? NSNumber ?? NSNumber()) ?? ""
     }
 }
+

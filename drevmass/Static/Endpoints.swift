@@ -7,7 +7,6 @@
 import Foundation
 
 enum Endpoints {
-//    case products(sorting: SortingType)
     case asset(name: String)
 	case courses
     case courseDetail(id: Int)
@@ -27,6 +26,7 @@ enum Endpoints {
     case contacts
     case support
     case product(sortType: SortingType)
+    case productDetail(id: Int)
     
     private static let baseURL = "http://185.100.67.103/api/"
     
@@ -81,6 +81,8 @@ enum Endpoints {
             }
                 
             return "products/\(sort)"
+        case .productDetail(id: let productID):
+            return "products/\(productID)"
         }
     }
     
