@@ -27,6 +27,8 @@ enum Endpoints {
     case support
     case product(sortType: SortingType)
     case productDetail(id: Int)
+    case basket
+    case getBasket
     
     private static let baseURL = "http://185.100.67.103/api/"
     
@@ -83,6 +85,10 @@ enum Endpoints {
             return "products/\(sort)"
         case .productDetail(id: let productID):
             return "products/\(productID)"
+        case .basket:
+            return "basket"
+        case .getBasket:
+            return "basket?is_using=no"
         }
     }
     

@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import Alamofire
+import SwiftyJSON
 
 class ProductPlateCell: UICollectionViewCell {
     
@@ -44,9 +46,12 @@ class ProductPlateCell: UICollectionViewCell {
     private lazy var cartButton: UIButton = {
         let button = UIButton()
         button.setImage(.CartButton.normal, for: .normal)
+        button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         
         return button
     }()
+    
+    private lazy var isAddedToCart = false
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -63,7 +68,7 @@ class ProductPlateCell: UICollectionViewCell {
 extension ProductPlateCell {
     func setupUI() {
         contentView.addSubviews(imageview, priceLabel, productLabel, cartButton)
-
+        
     }
     
     func setupConstraints() {
@@ -96,9 +101,30 @@ extension ProductPlateCell {
         productLabel.text = product.name
     }
     
-//    func setdata(recommendedProduct: ProductDetail.Recommend){
-//        imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(recommendedProduct.imageUrl)"))
-//        priceLabel.text = "\(recommendedProduct.price.formattedString()) ₽"
-//        productLabel.text = recommendedProduct.name
+    @objc func cartButtonTapped() {
+        isAddedToCart.toggle()
+        let image = isAddedToCart ? UIImage.CartButton.added : UIImage.CartButton.normal
+        cartButton.setImage(image, for: .normal)
+//        if isAddedToCart == true {
+//            fetchCart()
+//        }
+    }
+    
+//    private func fetchCart(){
+//        AF.request(Endpoints.basket.value, method: .post,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
+//            switch response.result {
+//            case .success(let data):
+//                let json = JSON(data)
+//                if let token = json["product_id"].string{
+//                    
+//                }
+//                if let token = json["count"].string{
+//                    
+//                }
+//                self.cartButton.setImage(.CartButton.added, for: .normal)
+//            case .failure(_):
+//                self.inputViewController?.showToast(type: .error)
+//            }
+//        }
 //    }
 }

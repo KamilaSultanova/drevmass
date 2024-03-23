@@ -187,9 +187,8 @@ class ContactViewController: UIViewController, PanModalPresentable {
     func tapMessageButton(){
         let supportVC = SupportViewController()
         supportVC.onMessageSent = {
-                self.onMessageSent?()
-            }
-        
+            self.onMessageSent?()
+        }
         present(UINavigationController(rootViewController: supportVC), animated: true)
     }
     

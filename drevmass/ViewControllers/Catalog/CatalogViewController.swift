@@ -114,7 +114,7 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        title = "Курсы"
+        title = "Каталог"
     }
     
     override func viewDidLoad() {

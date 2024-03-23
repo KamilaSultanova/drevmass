@@ -86,7 +86,7 @@ class ProductViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
-//        button.addTarget(self, action: #selector(alert), for: .touchDown)
+        button.addTarget(self, action: #selector(addToCartTapped), for: .touchDown)
         return button
     }()
     
@@ -286,7 +286,7 @@ class ProductViewController: UIViewController {
     private lazy var fadeImageview: UIImageView = {
         let imageview = UIImageView()
         
-        imageview.contentMode = .scaleAspectFit
+        imageview.contentMode = .scaleAspectFill
         imageview.image = .buttonFade
         
         return imageview
@@ -308,7 +308,16 @@ class ProductViewController: UIViewController {
                                    height: recommendProduct.height,
                                    size: recommendProduct.size,
                                    viewed: recommendProduct.viewed)
-        } else {
+        }else if let recommendProduct = product as? Basket.Product {
+            self.product = Product(id: recommendProduct.id,
+                                   imageUrl: recommendProduct.imageUrl,
+                                   videoId: recommendProduct.videoId,
+                                   price: recommendProduct.price,
+                                   name: recommendProduct.name,
+                                   description: recommendProduct.description,
+                                   height: recommendProduct.height,
+                                   size: recommendProduct.size, viewed: nil)
+        }else {
             fatalError("Unsupported type passed to ProductViewController")
         }
         super.init(nibName: nil, bundle: nil)
@@ -425,22 +434,15 @@ extension ProductViewController{
 extension ProductViewController {
     @objc
     func shareTapped(){
-//        let text = "Скачай приложение Drevmass и получи бонус 2500 рублей по промокоду: \(promocodeLabel.text ?? "") в приложении!"
-        let image = UIImageView(image: .logoDrevmass)
+        let text = "Привет! В приложении \"Древмасс\" нашел \(productLabel.text ?? "")"
+        let image = posterImageview
 
         let activityViewController = UIActivityViewController(
-            activityItems: [image],
+            activityItems: [text, image],
             applicationActivities: nil
         )
         activityViewController.popoverPresentationController?.sourceView = self.view
-        self.present(activityViewController, animated: true) {
-            let imageActivityViewController = UIActivityViewController(
-                activityItems: [image as Any],
-                applicationActivities: nil
-            )
-            imageActivityViewController.popoverPresentationController?.sourceView = self.view
-            self.present(imageActivityViewController, animated: true)
-        }
+        self.present(activityViewController, animated: true)
     }
     
     func fetchRecommendedProducts() {
@@ -469,6 +471,25 @@ extension ProductViewController {
             }
         }
     }
+    
+    @objc
+    func addToCartTapped(){
+//        AF.request(Endpoints.basket.value, method: .post,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
+//            switch response.result {
+//            case .success(let data):
+//                let json = JSON(data)
+//                if let token = json["product_id"].string{
+//                    
+//                }
+//                if let token = json["count"].string{
+//                    
+//                }
+//                
+//            case .failure(_):
+//                self.showToast(type: .error)
+//            }
+//        }
+    }
 }
 
 
@@ -493,7 +514,7 @@ extension ProductViewController: UICollectionViewDataSource, UICollectionViewDel
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedProduct = recommendProductArray[indexPath.row]
+        
         let productDetailVC = ProductViewController(product: recommendProductArray[indexPath.row])
 
         navigationController?.pushViewController(productDetailVC, animated: true)
