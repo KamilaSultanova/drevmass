@@ -7,11 +7,29 @@
 
 import UIKit
 import SnapKit
+import Alamofire
 
+protocol ListTableViewCellDelegate: AnyObject {
+    func decreasedNumberOfproducts(countId: Int)
+    func increaseNumberOfProducts(countId: Int)
+    func deleteAlert()
+}
 class ListTableViewCell: UITableViewCell {
 
     // MARK: - UI Elements
     
+    var productId: Int?
+        
+    var count: Int = 0
+    
+    var currentCount: Int = 0
+        
+    weak var delegate: CatalogViewController?
+    
+    weak var delegateCartVC: CartViewController?
+    
+    weak var delegateListTableviewCell: ListTableViewCellDelegate?
+        
     private lazy var imageview: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
@@ -41,15 +59,16 @@ class ListTableViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var cartButton: UIButton = {
+    lazy var cartButton: UIButton = {
         let button = UIButton()
         button.tag = 1001
         button.setImage(.CartButton.normal, for: .normal)
+        button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         
         return button
     }()
     
-    private lazy var quantityView: UIView = {
+    lazy var quantityView: UIView = {
         let view = UIView()
         view.backgroundColor = .appBeige30
         view.layer.cornerRadius = 16
@@ -59,27 +78,28 @@ class ListTableViewCell: UITableViewCell {
         return view
     }()
     
-    private lazy var quantityLabel: UILabel = {
+    lazy var quantityLabel: UILabel = {
         let label = UILabel()
         label.font = .appFont(ofSize: 15, weight: .semiBold)
         label.textColor = .appDark90
         label.numberOfLines = 1
-        label.text = "1"
         label.textAlignment = .center
         
         return label
     }()
     
-    private lazy var minusButton: UIButton = {
+    lazy var minusButton: UIButton = {
         let button = UIButton()
         button.setImage(.minus, for: .normal)
+        button.addTarget(self, action: #selector(minusButtonTapped), for: .touchUpInside)
         
         return button
     }()
     
-    private lazy var plusButton: UIButton = {
+    lazy var plusButton: UIButton = {
         let button = UIButton()
         button.setImage(.plus, for: .normal)
+        button.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
         
         return button
     }()
@@ -157,5 +177,106 @@ extension ListTableViewCell {
         priceLabel.text = "\(product.price.formattedString()) ₽"
         productLabel.text = product.name
     }
+    
+    func setCount(product: Basket.BasketItem){
+        quantityLabel.text = "\(product.count)"
+        currentCount = product.count
+    }
+    
+    @objc private func cartButtonTapped() {
+        let parameters = [
+            "product_id": productId,
+            "count": count
+        ]
+    
+        AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
+            switch response.result {
+            case .success(_):
+                UserDefaults.standard.set(self.productId, forKey: "selectedProductID")
+                self.cartButton.setImage(.CartButton.added, for: .normal)
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
+    }
 
+}
+
+extension ListTableViewCell{
+    
+    @objc private func minusButtonTapped() {
+        if currentCount > 1 {
+            descreaseCart()
+            delegateListTableviewCell?.decreasedNumberOfproducts(countId: currentCount)
+        }else{
+            deleteAlert()
+        }
+    }
+    
+    
+    func descreaseCart() {
+        let parameters: [String: Any] = [
+            "product_id": productId,
+            "count": currentCount
+        ]
+        
+        AF.request(Endpoints.decrease.value, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                print(currentCount)
+                quantityLabel.text = "\(currentCount)"
+                print("decreased")
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
+        
+    }
+    
+    @objc private func plusButtonTapped() {
+        let parameters: [String: Any] = [
+            "product_id": productId,
+            "count": currentCount
+        ]
+        
+        AF.request(Endpoints.increase.value, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                print(currentCount)
+                quantityLabel.text = "\(currentCount)"
+                print("increased")
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
+        delegateListTableviewCell?.increaseNumberOfProducts(countId: currentCount)
+    }
+    
+    
+    func deleteAlert() {
+        
+        let alertController = UIAlertController(title: "Вы уверены, что хотите удалить данный товар?", message: nil, preferredStyle: .alert)
+        let cancelAction = UIAlertAction(title: "Оставить", style: .default, handler: nil)
+        alertController.addAction(cancelAction)
+        let deletetAction = UIAlertAction(title: "Удалить", style: .destructive) { [self] _ in
+                        
+            AF.request(Endpoints.basketProduct(productID: productId!).value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                switch response.result {
+                case .success(_):
+                    print("deleted")
+                case .failure(let error):
+                    print("Error: \(error)")
+                    self.inputViewController?.showToast(type: .error)
+                }
+            }
+            delegateListTableviewCell?.deleteAlert()
+        }
+    
+        alertController.addAction(deletetAction)
+        delegateCartVC?.present(alertController, animated: true, completion: nil)
+    }
+    
 }

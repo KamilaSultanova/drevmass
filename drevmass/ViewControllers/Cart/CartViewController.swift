@@ -53,7 +53,7 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
     
     private lazy var emptyCartLabel: UILabel = {
         let label = UILabel()
-        label.text = "В истории баллов пока пусто"
+        label.text = "В корзине пока ничего нет"
         label.font = .appFont(ofSize: 17, weight: .semiBold)
         label.textColor = .appDark100
         label.textAlignment = .center
@@ -94,6 +94,13 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         return button
     }()
     
+    private lazy var productsView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+    
+        return view
+    }()
+    
     private lazy var tableView: SelfSizingTableView = {
         let tableView = SelfSizingTableView()
 
@@ -124,12 +131,13 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         return image
     }()
     
-    private lazy var notificationSwitch: UISwitch = {
-        let switchNotification = UISwitch()
-        switchNotification.onTintColor = .appBeige100
-//        switchNotification.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
+    private lazy var bonusSwitch: UISwitch = {
+        let switchBonus = UISwitch()
+        switchBonus.onTintColor = .appBeige100
+        switchBonus.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
+        switchBonus.isOn = true
         
-        return switchNotification
+        return switchBonus
     }()
     
     private lazy var bonusInfoLabel: UILabel = {
@@ -273,15 +281,26 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         button.contentHorizontalAlignment = .left
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
-//        button.addTarget(self, action: #selector(alert), for: .touchDown)
+        button.addTarget(self, action: #selector(orderButtonTapped), for: .touchUpInside)
         return button
     }()
-
+    
+    private lazy var purchasePriceLabel: UILabel = {
+        let label = UILabel()
+        label.font = .appFont(ofSize: 17, weight: .semiBold)
+        label.text = "100"
+        label.textColor = .white
+        label.numberOfLines = 1
+        label.textAlignment = .right
+        
+        return label
+    }()
 
     // MARK: - Lifecycle
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        fetchCart()
     }
     
     override func viewDidLoad() {
@@ -291,8 +310,8 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         setupNavBar()
         setupUI()
         setupConstraints()
-        configureViews()
-        fetchCart()
+//        fetchCart()
+//        configureViews()
         
     }
 }
@@ -303,8 +322,10 @@ extension CartViewController {
         view.addSubviews(scrollView, fadeImageview)
         fadeImageview.addSubview(purchaseButton)
         scrollView.addSubview(contentView)
-        contentView.addSubviews(emptyСartImageView,emptyCartLabel, instrustionsLabel, catalogButton, tableView, bonusLabel, bonusIcon, notificationSwitch, bonusInfoLabel, promocodeButton, priceView, recommendProductLabel, collectionView)
+        contentView.addSubviews(emptyСartImageView,emptyCartLabel, instrustionsLabel, catalogButton, productsView)
+        productsView.addSubviews( tableView, bonusLabel, bonusIcon, bonusSwitch, bonusInfoLabel, promocodeButton, priceView, recommendProductLabel, collectionView)
         priceView.addSubviews(productsPriceLabel, productsNumberLabel, bonusPaymentLabel, discountLabel, lineImageView, totalLabel, finalPriceLabel)
+        purchaseButton.addSubview(purchasePriceLabel)
         
     }
     
@@ -344,6 +365,10 @@ extension CartViewController {
             make.width.equalTo(199)
         }
         
+        productsView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
         tableView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalToSuperview()
         }
@@ -359,7 +384,7 @@ extension CartViewController {
             make.left.equalTo(bonusLabel.snp.right).offset(4)
         }
         
-        notificationSwitch.snp.makeConstraints { make in
+        bonusSwitch.snp.makeConstraints { make in
             make.centerY.equalTo(bonusLabel)
             make.right.equalToSuperview().inset(16)
         }
@@ -443,14 +468,32 @@ extension CartViewController {
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(56)
         }
+        
+        purchasePriceLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(24)
+        }
     }
     
     private func configureViews(){
-        emptyCartLabel.isHidden = true
-        emptyСartImageView.isHidden = true
-        instrustionsLabel.isHidden = true
-        catalogButton.isHidden = true
+        if selectedProductArray.isEmpty {
+            productsView.isHidden = true
+            fadeImageview.isHidden = true
+            emptyCartLabel.isHidden = false
+            emptyСartImageView.isHidden = false
+            instrustionsLabel.isHidden = false
+            catalogButton.isHidden = false
+        }else{
+            productsView.isHidden = false
+            fadeImageview.isHidden = false
+            emptyCartLabel.isHidden = true
+            emptyСartImageView.isHidden = true
+            instrustionsLabel.isHidden = true
+            catalogButton.isHidden = true
+        }
+        setupNavBar()
     }
+    
 }
 
 extension CartViewController{
@@ -462,14 +505,51 @@ extension CartViewController{
     }
     
     @objc
-    func deleteTapped(){
+    func deleteTapped() {
+        let alertController = UIAlertController(title: "Удаление товаров", message: "Вы уверены, что хотите удалить все товары?", preferredStyle: .actionSheet)
         
+        let deleteAction = UIAlertAction(title: "Очистить корзину", style: .destructive) { [weak self] _ in
+            self?.deleteAllProducts()
+        }
+        alertController.addAction(deleteAction)
+        
+        let cancelAction = UIAlertAction(title: "Отмена", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        alertController.popoverPresentationController?.sourceView = view
+        alertController.popoverPresentationController?.sourceRect = CGRect(x: view.bounds.midX, y: view.bounds.midY, width: 0, height: 0)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+
+    
+    func deleteAllProducts() {
+        AF.request(Endpoints.basket.value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                fetchCart()
+                print("deleted")
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
+    }
+    
+    @objc func switchChanged(_ sender: UISwitch) {
+        fetchCart()
     }
     
     @objc
     func tapPromocodeButton(){
         let enterPromocodeVC = EnterPromocodeViewController()
         presentPanModal(enterPromocodeVC)
+    }
+    
+    @objc
+    func orderButtonTapped(){
+        let orderVC = OrderViewController()
+        navigationController?.pushViewController(orderVC, animated: true)
     }
 }
 
@@ -481,15 +561,16 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! ListTableViewCell
         
-        if let cartButton = cell.viewWithTag(1001) as? UIButton {
-               cartButton.isHidden = true
-           }
-        if let quantityButton = cell.viewWithTag(1002) as? UIView {
-            quantityButton.isHidden = false
-           }
-        
         cell.setdata(product: selectedProductArray[indexPath.row])
+        
+        cell.cartButton.isHidden = true
+        cell.quantityView.isHidden = false
+//        let product = selectedProductArray[indexPath.row]
+        cell.productId = selectedProductArray[indexPath.row].id
+        cell.setCount(product: selectedProductArray[indexPath.row] as! Basket.BasketItem)
         cell.selectionStyle = .none
+        cell.delegateCartVC = self
+        cell.delegateListTableviewCell = self
         return cell
     }
     
@@ -500,17 +581,28 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension CartViewController{
     func fetchCart(){
-        print(Endpoints.getBasket.value)
         AF.request(Endpoints.getBasket.value, method: .get,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseDecodable(of: Basket.self) { [self] response in
                     switch response.result {
                     case .success(let basket):
                         selectedProductArray = basket.basket
+                        
+                        configureViews()
                         bonusLabel.text = "Списать бонусы \(basket.bonus)"
                         bonusInfoLabel.text = "Баллами можно оплатить до \(basket.discount)% от стоимости заказа."
                         productsNumberLabel.text = "\(basket.countProducts) товара"
                         productsPriceLabel.text = "\(basket.totalPrice.formattedString()) ₽ "
-                        discountLabel.text = "-\(basket.bonus) ₽ "
+                        
                         finalPriceLabel.text = "\(basket.basketPrice.formattedString()) ₽"
+                        
+                        if bonusSwitch.isOn == true{
+                            discountLabel.text = "-\(basket.bonus) ₽ "
+                            finalPriceLabel.text = "\((basket.basketPrice - basket.bonus).formattedString()) ₽"
+                        }else{
+                            discountLabel.text = "0 ₽ "
+                            finalPriceLabel.text = "\(basket.basketPrice.formattedString()) ₽"
+                        }
+                        purchasePriceLabel.text = finalPriceLabel.text
+                        
                         tableView.reloadData()
                         
                         recommendProductArray = basket.products
@@ -537,6 +629,8 @@ extension CartViewController: UICollectionViewDelegate, UICollectionViewDataSour
         }
 
         cell.setdata(product: recommendProductArray[indexPath.row])
+        cell.productId = recommendProductArray[indexPath.row].id
+        cell.delegateProductCell = self
         return cell
     }
     
@@ -562,7 +656,14 @@ extension CartViewController{
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         let rightButton = UIButton()
-        rightButton.setImage(.delete, for: .normal)
+        
+        if selectedProductArray.isEmpty{
+            rightButton.setImage(.none, for: .normal)
+            rightButton.isEnabled = false
+        }else{
+            rightButton.setImage(.delete, for: .normal)
+            rightButton.isEnabled = true
+        }
         rightButton.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
         navigationController?.navigationBar.addSubview(rightButton)
         rightButton.tag = 1
@@ -579,3 +680,24 @@ extension CartViewController{
     }
 }
 
+
+extension CartViewController: ProductPlateCellDelegate {
+    func addToCartButtonTapped(productId: Int) {
+      fetchCart()
+    }
+}
+
+extension CartViewController: ListTableViewCellDelegate{
+    func deleteAlert() {
+        fetchCart()
+        configureViews()
+    }
+    
+    func increaseNumberOfProducts(countId: Int) {
+        fetchCart()
+    }
+    
+    func decreasedNumberOfproducts(countId: Int) {
+        fetchCart()
+    }
+}

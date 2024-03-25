@@ -94,6 +94,7 @@
 		8F6676542BA9611900183F35 /* GaleryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6676532BA9611900183F35 /* GaleryTableViewCell.swift */; };
 		8F6676562BA969BB00183F35 /* ListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F6676552BA969BB00183F35 /* ListTableViewCell.swift */; };
 		8F987EF72BAF07600086388B /* Basket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987EF62BAF07600086388B /* Basket.swift */; };
+		8F987EFB2BB15A690086388B /* OrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987EFA2BB15A690086388B /* OrderViewController.swift */; };
 		8FD8D5D72BAA0C9800DD65AA /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */; };
 		9C84960395768DC4EA477185 /* Pods_drevmass_drevmassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97DDF01AF1D9827DB0BF5BA /* Pods_drevmass_drevmassUITests.framework */; };
 		FDC60C24CF0D5AFF5F09C777 /* Pods_drevmassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */; };
@@ -207,6 +208,7 @@
 		8F6676532BA9611900183F35 /* GaleryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GaleryTableViewCell.swift; sourceTree = "<group>"; };
 		8F6676552BA969BB00183F35 /* ListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListTableViewCell.swift; sourceTree = "<group>"; };
 		8F987EF62BAF07600086388B /* Basket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basket.swift; sourceTree = "<group>"; };
+		8F987EFA2BB15A690086388B /* OrderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderViewController.swift; sourceTree = "<group>"; };
 		8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
 		9BD710C3EBA6F3DD74C1DACD /* Pods-drevmass-drevmassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass-drevmassUITests.debug.xcconfig"; path = "Target Support Files/Pods-drevmass-drevmassUITests/Pods-drevmass-drevmassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_drevmassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -499,6 +501,7 @@
 			isa = PBXGroup;
 			children = (
 				8F3148AB2BA0401C00DE99FE /* CartViewController.swift */,
+				8F987EFA2BB15A690086388B /* OrderViewController.swift */,
 			);
 			path = Cart;
 			sourceTree = "<group>";
@@ -941,6 +944,7 @@
 				8F55EF5A2BA2D42F00514BCE /* DataViewController.swift in Sources */,
 				8F11CFD62B9E4757007C7FDB /* LessonTableViewCell.swift in Sources */,
 				8F55EF622BA2D4EA00514BCE /* InformationViewController.swift in Sources */,
+				8F987EFB2BB15A690086388B /* OrderViewController.swift in Sources */,
 				8F11CFD92B9E4757007C7FDB /* CourseTableViewCell.swift in Sources */,
 				8F55EF532BA2150C00514BCE /* CustomButton.swift in Sources */,
 				8F55EF582BA2D38900514BCE /* PromocodeViewController.swift in Sources */,

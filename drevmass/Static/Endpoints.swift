@@ -29,6 +29,9 @@ enum Endpoints {
     case productDetail(id: Int)
     case basket
     case getBasket
+    case decrease
+    case increase
+    case basketProduct(productID: Int)
     
     private static let baseURL = "http://185.100.67.103/api/"
     
@@ -88,7 +91,13 @@ enum Endpoints {
         case .basket:
             return "basket"
         case .getBasket:
-            return "basket?is_using=no"
+            return "basket?is_using=yes"
+        case .decrease:
+            return "decrease"
+        case .increase:
+            return "increase"
+        case .basketProduct(productID: let productId):
+            return "basket/\(productId)"
         }
     }
     

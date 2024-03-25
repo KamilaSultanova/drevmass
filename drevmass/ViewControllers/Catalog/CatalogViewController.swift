@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Alamofire
+import SwiftyJSON
 
 
 class CatalogViewController: UIViewController, UIScrollViewDelegate {
@@ -253,6 +254,8 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
         }
         
         cell.setdata(product: productArray[indexPath.row])
+        cell.productId = productArray[indexPath.row].id
+        cell.delegate = self
         
         return cell
     }
@@ -282,7 +285,10 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "GalleryCell", for: indexPath) as! GaleryTableViewCell
             
             cell.setdata(product: productArray[indexPath.row])
+            cell.productId = productArray[indexPath.row].id
             cell.selectionStyle = .none
+            cell.delegate = self
+            
             return cell
         }
         
@@ -290,7 +296,11 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! ListTableViewCell
             
             cell.setdata(product: productArray[indexPath.row])
+            cell.productId = productArray[indexPath.row].id
             cell.selectionStyle = .none
+            cell.delegate = self
+            
+       
             return cell
         }
         
@@ -305,5 +315,5 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
         let productDetailVC = ProductViewController(product: productArray[indexPath.row])
         navigationController?.pushViewController(productDetailVC, animated: true)
     }
-    
 }
+

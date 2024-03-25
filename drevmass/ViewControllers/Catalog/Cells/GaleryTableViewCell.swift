@@ -7,10 +7,17 @@
 
 import UIKit
 import SnapKit
+import Alamofire
 
 class GaleryTableViewCell: UITableViewCell {
     
     // MARK: - UI Elements
+    
+    var productId: Int?
+    
+    var count = 1
+        
+    weak var delegate: CatalogViewController?
     
     private lazy var imageview: UIImageView = {
         let imageView = UIImageView()
@@ -96,5 +103,23 @@ extension GaleryTableViewCell {
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(product.imageUrl)"))
         priceLabel.text = "\(product.price.formattedString()) ₽"
         productLabel.text = product.name
+    }
+    
+    @objc private func cartButtonTapped() {
+        let parameters = [
+            "product_id": productId,
+            "count": count
+        ]
+    
+        AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
+            switch response.result {
+            case .success(_):
+                UserDefaults.standard.set(self.productId, forKey: "selectedProductID")
+                self.cartButton.setImage(.CartButton.added, for: .normal)
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
     }
 }

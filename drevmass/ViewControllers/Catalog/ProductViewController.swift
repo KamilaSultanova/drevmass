@@ -86,7 +86,7 @@ class ProductViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
-        button.addTarget(self, action: #selector(addToCartTapped), for: .touchDown)
+//        button.addTarget(self, action: #selector(addToCartTapped), for: .touchDown)
         return button
     }()
     
@@ -471,25 +471,6 @@ extension ProductViewController {
             }
         }
     }
-    
-    @objc
-    func addToCartTapped(){
-//        AF.request(Endpoints.basket.value, method: .post,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
-//            switch response.result {
-//            case .success(let data):
-//                let json = JSON(data)
-//                if let token = json["product_id"].string{
-//                    
-//                }
-//                if let token = json["count"].string{
-//                    
-//                }
-//                
-//            case .failure(_):
-//                self.showToast(type: .error)
-//            }
-//        }
-    }
 }
 
 
@@ -506,6 +487,8 @@ extension ProductViewController: UICollectionViewDataSource, UICollectionViewDel
         }
 
         cell.setdata(product: recommendProductArray[indexPath.row])
+        cell.productId = recommendProductArray[indexPath.row].id
+        cell.delegateProductVC = self
         return cell
     }
 

@@ -10,9 +10,25 @@ import SnapKit
 import Alamofire
 import SwiftyJSON
 
+protocol ProductPlateCellDelegate: AnyObject {
+    func addToCartButtonTapped(productId: Int)
+}
+
 class ProductPlateCell: UICollectionViewCell {
     
     // MARK: - UI Elements
+    
+    var productId: Int?
+    
+    var count = 1
+        
+    weak var delegate: CatalogViewController?
+    
+    weak var delegateProductVC: ProductViewController?
+    
+    weak var delegateCartVC: CartViewController?
+    
+    weak var delegateProductCell: ProductPlateCellDelegate?
     
     private lazy var imageview: UIImageView = {
         let imageView = UIImageView()
@@ -43,7 +59,7 @@ class ProductPlateCell: UICollectionViewCell {
         return label
     }()
     
-    private lazy var cartButton: UIButton = {
+    lazy var cartButton: UIButton = {
         let button = UIButton()
         button.setImage(.CartButton.normal, for: .normal)
         button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
@@ -101,30 +117,24 @@ extension ProductPlateCell {
         productLabel.text = product.name
     }
     
-    @objc func cartButtonTapped() {
-        isAddedToCart.toggle()
-        let image = isAddedToCart ? UIImage.CartButton.added : UIImage.CartButton.normal
-        cartButton.setImage(image, for: .normal)
-//        if isAddedToCart == true {
-//            fetchCart()
-//        }
+    @objc private func cartButtonTapped() {
+        let parameters = [
+            "product_id": productId,
+            "count": count
+        ]
+    
+        AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
+            switch response.result {
+            case .success(_):
+                UserDefaults.standard.set(self.productId, forKey: "selectedProductID")
+                self.cartButton.setImage(.CartButton.added, for: .normal)
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
+        delegateProductCell?.addToCartButtonTapped(productId: self.productId ?? 0)
     }
     
-//    private func fetchCart(){
-//        AF.request(Endpoints.basket.value, method: .post,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { response in
-//            switch response.result {
-//            case .success(let data):
-//                let json = JSON(data)
-//                if let token = json["product_id"].string{
-//                    
-//                }
-//                if let token = json["count"].string{
-//                    
-//                }
-//                self.cartButton.setImage(.CartButton.added, for: .normal)
-//            case .failure(_):
-//                self.inputViewController?.showToast(type: .error)
-//            }
-//        }
-//    }
+    
 }
