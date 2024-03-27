@@ -23,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         if AuthService.shared.isAuthorized {
             let tabBarVC = TabBarController()
+        
             window.rootViewController =  tabBarVC
         } else {
             let onboardingVC = OnboardingViewController()

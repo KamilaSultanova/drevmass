@@ -138,6 +138,7 @@ class CoursesViewController: UIViewController {
         navigationItem.rightBarButtonItem = bookmarkButton
         hideBookmarkButton()
 		fetchCourses()
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {

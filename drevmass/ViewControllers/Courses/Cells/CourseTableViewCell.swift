@@ -97,7 +97,7 @@ class CourseTableViewCell: UITableViewCell {
 		titleLabel.text = course.name
         let lessonCount = course.number
         let (lessonString, suffix) = lessonCount.lessons()
-		imageview.sd_setImage(with: URL(string: course.image))
+		imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(course.image)"))
 		
 		let regularAttributes: [NSAttributedString.Key: Any] = [
 			.font: UIFont.appFont(ofSize: 13)
@@ -116,7 +116,7 @@ class CourseTableViewCell: UITableViewCell {
         attributedString.append(lessonCountAttributedString)
         attributedString.append(lessonSuffixAttributedString)
 		attributedString.append(NSAttributedString(string: " · ", attributes: semiboldAttributes))
-		attributedString.append(NSAttributedString(string: "\(course.duration)", attributes: boldAttributes))
+        attributedString.append(NSAttributedString(string: "\(Int(floor(Double(course.duration) / 60.0)))", attributes: boldAttributes))
 		attributedString.append(NSAttributedString(string: " мин", attributes: regularAttributes))
 		
 		lessonInfoLabel.attributedText = attributedString

@@ -11,7 +11,7 @@ struct ProductDetail: Decodable {
     let product: Product
     let recommend: [Recommend]
 
-    struct Product: Decodable {
+    struct Product: Decodable, ProductProtocol {
         let id: Int
         let name: String
         let description: String

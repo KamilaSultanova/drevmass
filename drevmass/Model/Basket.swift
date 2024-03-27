@@ -44,7 +44,9 @@ struct Basket: Decodable {
     }
 
     struct Product: Decodable, ProductProtocol {
-        let basketCount: Int
+        var viewed: Int?
+        
+        let basketCount: Int?
         let description: String
         let height: String
         let id: Int

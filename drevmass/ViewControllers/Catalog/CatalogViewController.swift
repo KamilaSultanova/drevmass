@@ -116,6 +116,8 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         title = "Каталог"
+        tableView.reloadData()
+        collectionView.reloadData()
     }
     
     override func viewDidLoad() {
@@ -252,7 +254,7 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductPlateCell", for: indexPath) as? ProductPlateCell else {
             fatalError("Unable to find a cell with identifier \(ProductPlateCell.self)!")
         }
-        
+//        cell.product = productArray[indexPath.row]
         cell.setdata(product: productArray[indexPath.row])
         cell.productId = productArray[indexPath.row].id
         cell.delegate = self
@@ -283,7 +285,7 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
         
         if currentLayoutType == .gallery{
             let cell = tableView.dequeueReusableCell(withIdentifier: "GalleryCell", for: indexPath) as! GaleryTableViewCell
-            
+//            cell.product = productArray[indexPath.row]
             cell.setdata(product: productArray[indexPath.row])
             cell.productId = productArray[indexPath.row].id
             cell.selectionStyle = .none
@@ -294,7 +296,7 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
         
         if currentLayoutType == .list{
             let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! ListTableViewCell
-            
+//            cell.product = productArray[indexPath.row]
             cell.setdata(product: productArray[indexPath.row])
             cell.productId = productArray[indexPath.row].id
             cell.selectionStyle = .none

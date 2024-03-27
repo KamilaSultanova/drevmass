@@ -14,7 +14,7 @@ class ProductViewController: UIViewController {
 
     // MARK: - UI Elements
     
-    let product: Product
+    var product: Product
     
     var recommendProductArray: [ProductDetail.Recommend] = []
     
@@ -97,9 +97,22 @@ class ProductViewController: UIViewController {
         button.backgroundColor = .appBeige100
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
+        button.contentHorizontalAlignment = .left
+        button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
-//        button.addTarget(self, action: #selector(alert), for: .touchDown)
+//        button.addTarget(self, action: #selector(addtoCartTapped), for: .touchUpInside)
         return button
+    }()
+        
+    private lazy var purchasePriceLabel: UILabel = {
+        let label = UILabel()
+        label.font = .appFont(ofSize: 17, weight: .semiBold)
+        label.text = "\(product.price.formattedString()) ₽"
+        label.textColor = .white
+        label.numberOfLines = 1
+        label.textAlignment = .right
+        
+        return label
     }()
     
     private lazy var howToUseButton: UIButton = {
@@ -293,10 +306,12 @@ class ProductViewController: UIViewController {
     }()
     
     
+    
+    
     // MARK: - Lifecycle
     
     init(product: ProductProtocol) {
-        if let product = product as? Product {
+        if var product = product as? Product {
             self.product = product
         } else if let recommendProduct = product as? ProductDetail.Recommend {
             self.product = Product(id: recommendProduct.id,
@@ -308,6 +323,16 @@ class ProductViewController: UIViewController {
                                    height: recommendProduct.height,
                                    size: recommendProduct.size,
                                    viewed: recommendProduct.viewed)
+        }else if let recommendProduct = product as? ProductDetail.Product {
+                self.product = Product(id: recommendProduct.id,
+                                       imageUrl: recommendProduct.imageUrl,
+                                       videoId: recommendProduct.videoId,
+                                       price: recommendProduct.price,
+                                       name: recommendProduct.name,
+                                       description: recommendProduct.description,
+                                       height: recommendProduct.height,
+                                       size: recommendProduct.size,
+                                       viewed: recommendProduct.viewed)
         }else if let recommendProduct = product as? Basket.Product {
             self.product = Product(id: recommendProduct.id,
                                    imageUrl: recommendProduct.imageUrl,
@@ -353,6 +378,7 @@ extension ProductViewController{
         fadeImageview.addSubview(addToCartBelowButton)
         scrollView.addSubview(contentView)
         contentView.addSubviews(posterImageview, productLabel, priceLabel, addToCartAboveButton, howToUseButton, stackview, lineImageView, titleLabel, descriptionLabel, recommendProductLabel, collectionView)
+        addToCartBelowButton.addSubview(purchasePriceLabel)
     }
     
     private func setupConstraints(){
@@ -428,6 +454,11 @@ extension ProductViewController{
             make.height.equalTo(180)
             make.bottom.equalToSuperview().inset(100)
         }
+        
+        purchasePriceLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(24)
+        }
     }
 }
 
@@ -485,7 +516,7 @@ extension ProductViewController: UICollectionViewDataSource, UICollectionViewDel
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductPlateCell" , for: indexPath) as? ProductPlateCell else {
             fatalError("Unable to find a cell with identifier ProductPlateCell!")
         }
-
+//        cell.product = recommendProductArray[indexPath.row]
         cell.setdata(product: recommendProductArray[indexPath.row])
         cell.productId = recommendProductArray[indexPath.row].id
         cell.delegateProductVC = self
@@ -547,4 +578,5 @@ extension ProductViewController: UIScrollViewDelegate {
         }
     }
 }
+
 

@@ -6,6 +6,7 @@
 
 import UIKit
 
+
 final class TabBarController: UITabBarController {
     
     // MARK: - Lifecycle
@@ -14,6 +15,8 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         setupTabBar()
         setupViewControllers()
+        
+    
     }
 }
 
@@ -35,6 +38,7 @@ private extension TabBarController {
         coursesVC.tabBarItem = UITabBarItem(title: "Курсы", image: .TabBar.courses, tag: 1)
         catalogVC.tabBarItem = UITabBarItem(title: "Каталог", image: .TabBar.catalog, tag: 2)
         cartVC.tabBarItem = UITabBarItem(title: "Корзина", image: .TabBar.cart, tag: 3)
+        cartVC.fetchCart()
         profileVC.tabBarItem = UITabBarItem(title: "Профиль", image: .TabBar.profile, tag: 4)
 
         let viewControllers = [coursesVC, catalogVC, cartVC, profileVC].map { vc in
@@ -47,4 +51,5 @@ private extension TabBarController {
 
         setViewControllers(viewControllers, animated: false)
     }
+    
 }
