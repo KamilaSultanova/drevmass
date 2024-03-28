@@ -21,6 +21,8 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
     
     var recommendProductArray: [Basket.Product] = []
     
+    var updateProductArray: [ProductDetail.Product] = []
+    
     private lazy var deleteButton: UIBarButtonItem = {
         let button = UIBarButtonItem(image: .delete.withTintColor(.appGray70), style: .plain, target: self, action: #selector(deleteTapped))
         
@@ -306,6 +308,13 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         fetchCart()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        if let rightButton = navigationController?.navigationBar.viewWithTag(1) as? UIButton {
+                   rightButton.isHidden = true
+               }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -313,9 +322,6 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         setupNavBar()
         setupUI()
         setupConstraints()
-//        fetchCart()
-//        configureViews()
-        
     }
 }
 
@@ -486,6 +492,9 @@ extension CartViewController {
             emptyСartImageView.isHidden = false
             instrustionsLabel.isHidden = false
             catalogButton.isHidden = false
+            if let rightButton = navigationController?.navigationBar.viewWithTag(1) as? UIButton {
+                rightButton.isHidden = true
+            }
         }else{
             productsView.isHidden = false
             fadeImageview.isHidden = false
@@ -493,8 +502,10 @@ extension CartViewController {
             emptyСartImageView.isHidden = true
             instrustionsLabel.isHidden = true
             catalogButton.isHidden = true
+            if let rightButton = navigationController?.navigationBar.viewWithTag(1) as? UIButton {
+                rightButton.isHidden = false
+            }
         }
-        setupNavBar()
     }
     
 }
@@ -565,13 +576,8 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! ListTableViewCell
         
         cell.setdata(product: selectedProductArray[indexPath.row])
-        for product in selectedProductArray {
-            print(type(of: product))
-        }
-        
         cell.cartButton.isHidden = true
         cell.quantityView.isHidden = false
-//        cell.product = selectedProductArray[indexPath.row]
         cell.productId = selectedProductArray[indexPath.row].id
         cell.setCount(product: selectedProductArray[indexPath.row] as! Basket.BasketItem)
         cell.selectionStyle = .none
@@ -585,10 +591,20 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-//        let productDetailVC = ProductViewController(product: selectedProductArray[indexPath.row])
-//        navigationController?.pushViewController(productDetailVC, animated: true)
         let productId = selectedProductArray[indexPath.row].id
-            fetchProductDetails(productId: productId)
+        
+        AF.request(Endpoints.productDetail(id: productId).value, method: .get, headers: [
+            .authorization(bearerToken: AuthService.shared.token)
+        ]).responseDecodable(of: ProductDetail.self) { response in
+            switch response.result {
+            case .success(let productDetail):
+                let product = productDetail.product
+                let productVC = ProductViewController(product: product)
+                self.navigationController?.pushViewController(productVC, animated: true)
+            case .failure(let error):
+                print(error)
+            }
+        }
     }
 }
 
@@ -648,7 +664,6 @@ extension CartViewController: UICollectionViewDelegate, UICollectionViewDataSour
             fatalError("Unable to find a cell with identifier ProductPlateCell!")
         }
         
-//        cell.product = recommendProductArray[indexPath.row]
         cell.setdata(product: recommendProductArray[indexPath.row])
         cell.productId = recommendProductArray[indexPath.row].id
         cell.delegateProductCell = self
@@ -671,23 +686,14 @@ extension CartViewController: UICollectionViewDelegate, UICollectionViewDataSour
 
 extension CartViewController{
     func setupNavBar() {
-
         self.title = "Корзина"
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         let rightButton = UIButton()
-        
-        if selectedProductArray.isEmpty{
-            rightButton.setImage(.none, for: .normal)
-            rightButton.isEnabled = false
-        }else{
-            rightButton.setImage(.delete, for: .normal)
-            rightButton.isEnabled = true
-        }
-        
+        rightButton.setImage(.delete, for: .normal)
         rightButton.addTarget(self, action: #selector(deleteTapped), for: .touchUpInside)
-        navigationController?.navigationBar.addSubview(rightButton)
         rightButton.tag = 1
+        navigationController?.navigationBar.addSubview(rightButton)
         rightButton.frame = CGRect(x: self.view.frame.width, y: 0, width: 24, height: 24)
 
         let targetView = self.navigationController?.navigationBar
@@ -723,34 +729,3 @@ extension CartViewController: ListTableViewCellDelegate{
     }
 }
 
-extension CartViewController{
-    func fetchProductDetails(productId: Int) {
-        // Выполните запрос на сервер, чтобы получить данные о продукте по его productId
-        // Например, используйте Alamofire или URLSession
-        // После получения данных, обновите product в вашем ProductViewController
-        
-        // Пример запроса с использованием Alamofire:
-        AF.request(Endpoints.productDetail(id: productId).value, method: .get, encoding: JSONEncoding.default, headers: [
-            .authorization(bearerToken: AuthService.shared.token)
-        ]).responseDecodable(of: ProductDetail.self) { [self] response in
-            switch response.result {
-            case .success(let data):
-                let json = JSON(data)
-                if let recommendJSON = json["Product"].arrayObject {
-                    do {
-                        let jsonData = try JSONSerialization.data(withJSONObject: recommendJSON)
-                        let recommendProducts = try JSONDecoder().decode([ProductDetail.Product].self, from: jsonData)
-                        self.product = product
-                        let productDetailVC = ProductViewController(product: product!)
-                        self.navigationController?.pushViewController(productDetailVC, animated: true)
-                    } catch {
-                        print("Error decoding JSON: \(error.localizedDescription)")
-                    }
-                }
-            case .failure(let error):
-                print("Request failed with error: \(error.localizedDescription)")
-            }
-        }
-    }
-
-}

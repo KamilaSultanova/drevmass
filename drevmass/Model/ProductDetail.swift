@@ -10,6 +10,11 @@ import Foundation
 struct ProductDetail: Decodable {
     let product: Product
     let recommend: [Recommend]
+    
+    enum CodingKeys: String, CodingKey{
+        case product = "Product"
+        case recommend = "Recommend"
+    }
 
     struct Product: Decodable, ProductProtocol {
         let id: Int
@@ -21,8 +26,7 @@ struct ProductDetail: Decodable {
         let price: Int
         let imageUrl: String
         let videoId: String
-        let viewed: Int
-        
+        let viewed: Int?
         
         enum CodingKeys: String, CodingKey {
             case imageUrl = "image_src"
@@ -39,6 +43,16 @@ struct ProductDetail: Decodable {
     }
     
     struct Recommend: Decodable, ProductProtocol {
+        let id: Int
+        let name: String
+        let description: String
+        let price: Int
+        let height: String
+        let size: String
+        let basket_count: Int
+        let imageUrl: String
+        let videoId: String
+        let viewed: Int?
         
         enum CodingKeys: String, CodingKey {
             case imageUrl = "image_src"
@@ -52,17 +66,7 @@ struct ProductDetail: Decodable {
             case viewed
             case basket_count
         }
-        
-        let id: Int
-        let name: String
-        let description: String
-        let price: Int
-        let height: String
-        let size: String
-        let basket_count: Int
-        let imageUrl: String
-        let videoId: String
-        let viewed: Int?
     }
 }
+
 

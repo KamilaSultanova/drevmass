@@ -324,15 +324,15 @@ class ProductViewController: UIViewController {
                                    size: recommendProduct.size,
                                    viewed: recommendProduct.viewed)
         }else if let recommendProduct = product as? ProductDetail.Product {
-                self.product = Product(id: recommendProduct.id,
-                                       imageUrl: recommendProduct.imageUrl,
-                                       videoId: recommendProduct.videoId,
-                                       price: recommendProduct.price,
-                                       name: recommendProduct.name,
-                                       description: recommendProduct.description,
-                                       height: recommendProduct.height,
-                                       size: recommendProduct.size,
-                                       viewed: recommendProduct.viewed)
+            self.product = Product(id: recommendProduct.id,
+                                   imageUrl: recommendProduct.imageUrl,
+                                   videoId: recommendProduct.videoId,
+                                   price: recommendProduct.price,
+                                   name: recommendProduct.name,
+                                   description: recommendProduct.description,
+                                   height: recommendProduct.height,
+                                   size: recommendProduct.size,
+                                   viewed: recommendProduct.viewed)
         }else if let recommendProduct = product as? Basket.Product {
             self.product = Product(id: recommendProduct.id,
                                    imageUrl: recommendProduct.imageUrl,
@@ -516,7 +516,6 @@ extension ProductViewController: UICollectionViewDataSource, UICollectionViewDel
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductPlateCell" , for: indexPath) as? ProductPlateCell else {
             fatalError("Unable to find a cell with identifier ProductPlateCell!")
         }
-//        cell.product = recommendProductArray[indexPath.row]
         cell.setdata(product: recommendProductArray[indexPath.row])
         cell.productId = recommendProductArray[indexPath.row].id
         cell.delegateProductVC = self
