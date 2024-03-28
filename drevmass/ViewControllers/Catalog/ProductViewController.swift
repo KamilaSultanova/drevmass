@@ -578,4 +578,30 @@ extension ProductViewController: UIScrollViewDelegate {
     }
 }
 
-
+extension ProductViewController{
+    func fecthButtonState(){
+        AF.request(Endpoints.getBasket.value, method: .get,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseDecodable(of: Basket.self) { [self] response in
+            switch response.result {
+            case .success(let basket):
+                for item in basket.basket {
+                    if item.id == self.product.id {
+                        // Assuming you have some action to perform with the count
+                        let count = item.count
+                        // Perform your action with the count here
+                        print("Count of product \(self.product.id) in basket: \(count)")
+                        // Example: Update UI based on count
+                        DispatchQueue.main.async {
+                            // Example: Update UI based on count
+                            // self.updateUI(with: count)
+                        }
+                        return // Exit the loop if a match is found
+                    }
+                }
+                // If no match found, handle accordingly
+                print("Product \(self.product.id) not found in basket")
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+}

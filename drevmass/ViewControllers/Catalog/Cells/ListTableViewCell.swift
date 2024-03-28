@@ -193,7 +193,6 @@ extension ListTableViewCell{
     @objc private func minusButtonTapped() {
         if currentCount > 1 {
             descreaseCart()
-            delegateListTableviewCell?.decreasedNumberOfproducts(countId: currentCount)
         }else{
             deleteAlert()
         }
@@ -211,13 +210,13 @@ extension ListTableViewCell{
             case .success(_):
                 print(currentCount)
                 quantityLabel.text = "\(currentCount)"
+                delegateListTableviewCell?.decreasedNumberOfproducts(countId: currentCount)
                 print("decreased")
             case .failure(let error):
                 print("Error: \(error)")
                 self.inputViewController?.showToast(type: .error)
             }
         }
-        
     }
     
     @objc private func plusButtonTapped() {
@@ -231,13 +230,13 @@ extension ListTableViewCell{
             case .success(_):
                 print(currentCount)
                 quantityLabel.text = "\(currentCount)"
+                delegateListTableviewCell?.increaseNumberOfProducts(countId: currentCount)
                 print("increased")
             case .failure(let error):
                 print("Error: \(error)")
                 self.inputViewController?.showToast(type: .error)
             }
         }
-        delegateListTableviewCell?.increaseNumberOfProducts(countId: currentCount)
     }
     
     
@@ -251,19 +250,18 @@ extension ListTableViewCell{
             AF.request(Endpoints.basketProduct(productID: productId!).value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
                 switch response.result {
                 case .success(_):
+                    delegateListTableviewCell?.deleteAlert()
                     print("deleted")
                 case .failure(let error):
                     print("Error: \(error)")
                     self.inputViewController?.showToast(type: .error)
                 }
             }
-            delegateListTableviewCell?.deleteAlert()
         }
     
         alertController.addAction(deletetAction)
         delegateCartVC?.present(alertController, animated: true, completion: nil)
     }
-    
 }
 
 extension ListTableViewCell{

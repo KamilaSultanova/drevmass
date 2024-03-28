@@ -305,6 +305,7 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.title = "Корзина"
         fetchCart()
     }
     
@@ -631,8 +632,13 @@ extension CartViewController{
                     
                     
                     if bonusSwitch.isOn == true{
-                        discountLabel.text = "-\(basket.bonus) ₽ "
-                        finalPriceLabel.text = "\((basket.basketPrice - basket.bonus).formattedString()) ₽"
+                        if Double(basket.bonus) < Double(basket.totalPrice) * 0.3{
+                            discountLabel.text = "-\(basket.bonus) ₽ "
+                            finalPriceLabel.text = "\((basket.basketPrice - basket.bonus).formattedString()) ₽"
+                        }else{
+                            discountLabel.text = "-\(Int(Double(basket.totalPrice) * 0.3)) ₽ "
+                            finalPriceLabel.text = "\((basket.basketPrice - Int(Double(basket.totalPrice) * 0.3)).formattedString()) ₽"
+                        }
                     }else{
                         discountLabel.text = "0 ₽ "
                         finalPriceLabel.text = "\(basket.basketPrice.formattedString()) ₽"
@@ -686,7 +692,6 @@ extension CartViewController: UICollectionViewDelegate, UICollectionViewDataSour
 
 extension CartViewController{
     func setupNavBar() {
-        self.title = "Корзина"
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         let rightButton = UIButton()
