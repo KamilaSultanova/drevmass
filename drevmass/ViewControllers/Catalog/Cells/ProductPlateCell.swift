@@ -11,7 +11,7 @@ import Alamofire
 import SwiftyJSON
 
 protocol ProductPlateCellDelegate: AnyObject {
-    func addToCartButtonTapped(productId: Int)
+    func addToCartButtonTapped(productId: Int, tabBarController: UITabBarController?)
 }
 
 class ProductPlateCell: UICollectionViewCell {
@@ -29,6 +29,8 @@ class ProductPlateCell: UICollectionViewCell {
     weak var delegateCartVC: CartViewController?
     
     weak var delegateProductCell: ProductPlateCellDelegate?
+    
+    weak var tabBarController: UITabBarController?
     
     private lazy var imageview: UIImageView = {
         let imageView = UIImageView()
@@ -121,7 +123,7 @@ extension ProductPlateCell {
     
     @objc private func cartButtonTapped() {
         guard let productId = productId else { return }
-      
+
         if let tabBarController = self.delegate?.tabBarController,
            let cartTabBarItem = tabBarController.tabBar.items?[2],
            let currentBadgeValue = cartTabBarItem.badgeValue,
@@ -167,8 +169,58 @@ extension ProductPlateCell {
                 }
             }
 
-        } else {
-            print("Error")
+        }
+        if let tabBarController = tabBarController,
+           let cartTabBarItem = tabBarController.tabBar.items?[2],
+           let currentBadgeValue = cartTabBarItem.badgeValue,
+           var totalCount = Int(currentBadgeValue) {
+            
+            if isAddedToCart {
+                totalCount -= 1
+                if totalCount > 0 {
+                    cartTabBarItem.badgeValue = "\(totalCount)"
+                } else {
+                    cartTabBarItem.badgeValue = "0"
+                }
+                
+                AF.request(Endpoints.basketProduct(productID: productId).value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                    switch response.result {
+                    case .success(_):
+                        isAddedToCart = false
+                        fetchInStock()
+                        delegateProductCell?.addToCartButtonTapped(productId: productId, tabBarController: delegate?.tabBarController)
+                    case .failure(let error):
+                        print("Error: \(error)")
+                        inputViewController?.showToast(type: .error)
+                    }
+                }
+            } else {
+                totalCount += 1
+                cartTabBarItem.badgeValue = "\(totalCount)"
+                
+                let parameters = [
+                   "product_id": productId,
+                   "count": count
+                    ]
+                
+                AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                    switch response.result {
+                    case .success(_):
+                        print("success")
+                        isAddedToCart = true
+                        fetchInStock()
+                        delegateProductCell?.addToCartButtonTapped(productId: productId, tabBarController: delegate?.tabBarController)
+                    case .failure(let error):
+                        print("Error: \(error)")
+                        inputViewController?.showToast(type: .error)
+                    }
+                }
+            }
+        }
+        
+        else {
+            print("Error: Could not access tab bar controller or badge value")
+
         }
     }
 
@@ -204,3 +256,4 @@ extension ProductPlateCell {
         }
     }
 }
+

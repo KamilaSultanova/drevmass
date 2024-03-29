@@ -15,8 +15,6 @@ final class TabBarController: UITabBarController {
         super.viewDidLoad()
         setupTabBar()
         setupViewControllers()
-        
-    
     }
 }
 

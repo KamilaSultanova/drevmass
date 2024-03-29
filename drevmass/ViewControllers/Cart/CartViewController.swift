@@ -123,7 +123,6 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         label.textColor = .appDark100
         label.numberOfLines = 1
         label.textAlignment = .left
-//        label.text = "Списать бонусы 500"
         
         return label
     }()
@@ -312,8 +311,8 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if let rightButton = navigationController?.navigationBar.viewWithTag(1) as? UIButton {
-                   rightButton.isHidden = true
-               }
+           rightButton.isHidden = true
+       }
     }
 
     override func viewDidLoad() {
@@ -329,8 +328,8 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
 extension CartViewController {
     private func setupUI() {
         
-        view.addSubviews(scrollView, fadeImageview)
-        fadeImageview.addSubview(purchaseButton)
+        view.addSubviews(scrollView, fadeImageview, purchaseButton)
+//        fadeImageview.addSubview(purchaseButton)
         scrollView.addSubview(contentView)
         contentView.addSubviews(emptyСartImageView,emptyCartLabel, instrustionsLabel, catalogButton, productsView)
         productsView.addSubviews( tableView, bonusLabel, bonusIcon, bonusSwitch, bonusInfoLabel, promocodeButton, priceView, recommendProductLabel, collectionView)
@@ -468,15 +467,15 @@ extension CartViewController {
             make.bottom.equalToSuperview().inset(100)
         }
         
-        fadeImageview.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview()
-            make.height.equalTo(137)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-        }
         purchaseButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(16)
             make.horizontalEdges.equalToSuperview().inset(16)
             make.height.equalTo(56)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        fadeImageview.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.horizontalEdges.equalToSuperview()
+            make.height.equalTo(137)
         }
         
         purchasePriceLabel.snp.makeConstraints { make in
@@ -563,6 +562,7 @@ extension CartViewController{
     
     @objc
     func orderButtonTapped(){
+        print("Order button tapped")
         let orderVC = OrderViewController()
         navigationController?.pushViewController(orderVC, animated: true)
     }
@@ -673,6 +673,7 @@ extension CartViewController: UICollectionViewDelegate, UICollectionViewDataSour
         cell.setdata(product: recommendProductArray[indexPath.row])
         cell.productId = recommendProductArray[indexPath.row].id
         cell.delegateProductCell = self
+        cell.tabBarController = self.tabBarController
         return cell
     }
     
@@ -714,8 +715,9 @@ extension CartViewController{
 
 
 extension CartViewController: ProductPlateCellDelegate {
-    func addToCartButtonTapped(productId: Int) {
-      fetchCart()
+    func addToCartButtonTapped(productId: Int, tabBarController: UITabBarController?) {
+        fetchCart()
+        
     }
 }
 
