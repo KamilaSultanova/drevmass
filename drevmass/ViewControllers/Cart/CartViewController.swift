@@ -516,7 +516,11 @@ extension CartViewController {
             }
         }
     }
-    
+    private func bonusState(){
+        bonusLabel.textColor = .appGray70
+        bonusSwitch.isOn = false
+        bonusSwitch.isEnabled = false
+    }
 }
 
 extension CartViewController{
@@ -661,6 +665,9 @@ extension CartViewController{
                         finalPriceLabel.text = "\(basket.basketPrice.formattedString()) ₽"
                         discount = 0
                         price = basket.basketPrice
+                    }
+                    if basket.bonus == 0{
+                        bonusState()
                     }
                     purchasePriceLabel.text = finalPriceLabel.text
                     purchasePrice = price
