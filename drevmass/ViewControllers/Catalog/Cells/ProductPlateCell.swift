@@ -217,6 +217,52 @@ extension ProductPlateCell {
                 }
             }
         }
+        if let tabBarController = self.delegateProductVC?.tabBarController,
+            let cartTabBarItem = tabBarController.tabBar.items?[2],
+            let currentBadgeValue = cartTabBarItem.badgeValue,
+            var totalCount = Int(currentBadgeValue) {
+             
+             if isAddedToCart {
+                 totalCount -= 1
+                 if totalCount > 0 {
+                     cartTabBarItem.badgeValue = "\(totalCount)"
+                 } else {
+                     cartTabBarItem.badgeValue = "0"
+                 }
+                 
+                 AF.request(Endpoints.basketProduct(productID: productId).value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                     switch response.result {
+                     case .success(_):
+                         isAddedToCart = false
+                         fetchInStock()
+                     case .failure(let error):
+                         print("Error: \(error)")
+                         inputViewController?.showToast(type: .error)
+                     }
+                 }
+             } else {
+                 totalCount += 1
+                 cartTabBarItem.badgeValue = "\(totalCount)"
+                 
+                 let parameters = [
+                    "product_id": productId,
+                    "count": count
+                     ]
+                 
+                 AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                     switch response.result {
+                     case .success(_):
+                         print("success")
+                         isAddedToCart = true
+                         fetchInStock()
+                     case .failure(let error):
+                         print("Error: \(error)")
+                         inputViewController?.showToast(type: .error)
+                     }
+                 }
+             }
+
+         }
         
         else {
             print("Error: Could not access tab bar controller or badge value")

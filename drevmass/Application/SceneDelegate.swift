@@ -18,9 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         let window = UIWindow(windowScene: windowScene)
-        
-//        KeychainSwift().clear()
-        
+                
         if AuthService.shared.isAuthorized {
             let tabBarVC = TabBarController()
         

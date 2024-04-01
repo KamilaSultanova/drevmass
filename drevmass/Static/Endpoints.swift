@@ -33,6 +33,7 @@ enum Endpoints {
     case increase
     case basketProduct(productID: Int)
     case activatePromocode
+    case order
     
     private static let baseURL = "http://185.100.67.103/api/"
     
@@ -101,6 +102,8 @@ enum Endpoints {
             return "basket/\(productId)"
         case .activatePromocode:
             return "activate"
+        case .order:
+            return "order"
         }
     }
     

@@ -257,27 +257,24 @@ extension SignInViewController {
     @objc
     func keyboardWillAppear() {
         enterButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(32)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+            make.height.equalTo(56)
         }
     }
     
     @objc
     func keyboardWillHide() {
         enterButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(enterLabel.snp.top).offset(-24)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(32)
+            make.bottom.equalTo(enterLabel.snp.top).offset(-24)
+            make.height.equalTo(56)
         }
     }
     
     @objc
     func textEditDidBegin(_ sender: TextFieldWithPadding) {
+        keyboardWillAppear()
         sender.bottomBorderColor = .appBeige100
         if sender == emailTextField {
             emailIcon.image = .mail

@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Alamofire
 import SwiftyJSON
+import youtube_ios_player_helper
 
 class ProductViewController: UIViewController {
 
@@ -17,6 +18,8 @@ class ProductViewController: UIViewController {
     var product: Product
     
     var recommendProductArray: [ProductDetail.Recommend] = []
+    
+    private lazy var count: Int = 1
     
     private lazy var shareButton: UIBarButtonItem = {
         let button = UIBarButtonItem(image: .CourseButton.share.withTintColor(.appBeige100), style: .plain, target: self, action: #selector(shareTapped))
@@ -86,7 +89,7 @@ class ProductViewController: UIViewController {
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
-//        button.addTarget(self, action: #selector(addToCartTapped), for: .touchDown)
+        button.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
         return button
     }()
     
@@ -100,7 +103,27 @@ class ProductViewController: UIViewController {
         button.contentHorizontalAlignment = .left
         button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
-//        button.addTarget(self, action: #selector(addtoCartTapped), for: .touchUpInside)
+        button.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var goToCartAboveButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .appBeige100
+        button.layer.cornerRadius = 28
+        button.clipsToBounds = true
+        button.setImage(.Icons.arrowRight, for: .normal)
+        button.addTarget(self, action: #selector(goToCartTapped), for: .touchUpInside)
+        return button
+    }()
+    
+    private lazy var goToCartBelowButton: UIButton = {
+        let button = UIButton()
+        button.backgroundColor = .appBeige100
+        button.layer.cornerRadius = 28
+        button.clipsToBounds = true
+        button.setImage(.Icons.arrowRight, for: .normal)
+        button.addTarget(self, action: #selector(goToCartTapped), for: .touchUpInside)
         return button
     }()
         
@@ -132,9 +155,17 @@ class ProductViewController: UIViewController {
         } else {
             button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 10)
         }
-//        button.addTarget(self, action: #selector(alert), for: .touchDown)
+        button.addTarget(self, action: #selector(watchButton), for: .touchDown)
         return button
     }()
+    
+    private lazy var playerView: YTPlayerView = {
+        let player = YTPlayerView()
+        
+        return player
+    }()
+    
+    let playerVars = ["controls": 1, "playsinline": 1, "autohide": 1, "showinfo": 1, "autoplay": 1, "modestbranding": 1]
     
     private lazy var heightView: UIView = {
         let heightView = UIView()
@@ -305,8 +336,59 @@ class ProductViewController: UIViewController {
         return imageview
     }()
     
+    lazy var quantityLabel: UILabel = {
+        let label = UILabel()
+        label.font = .appFont(ofSize: 15, weight: .semiBold)
+        label.textColor = .appDark90
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        
+        return label
+    }()
     
+    lazy var minusButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.minus, for: .normal)
+        button.addTarget(self, action: #selector(minusButtonTapped), for: .touchUpInside)
+        button.isEnabled = true
+        
+        return button
+    }()
     
+    lazy var plusButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.plus, for: .normal)
+        button.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
+        button.isEnabled = true
+        
+        return button
+    }()
+    
+    lazy var quantityBelowLabel: UILabel = {
+        let label = UILabel()
+        label.font = .appFont(ofSize: 15, weight: .semiBold)
+        label.textColor = .appDark90
+        label.numberOfLines = 1
+        label.textAlignment = .center
+        
+        return label
+    }()
+    
+    lazy var minusBelowButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.minus, for: .normal)
+        button.addTarget(self, action: #selector(minusButtonTapped), for: .touchUpInside)
+        
+        return button
+    }()
+    
+    lazy var plusBelowButton: UIButton = {
+        let button = UIButton()
+        button.setImage(.plus, for: .normal)
+        button.addTarget(self, action: #selector(plusButtonTapped), for: .touchUpInside)
+        
+        return button
+    }()
     
     // MARK: - Lifecycle
     
@@ -356,6 +438,7 @@ class ProductViewController: UIViewController {
         super.viewDidLayoutSubviews()
         updateConstraintsForAddToCartBelowButton()
     }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -368,20 +451,29 @@ class ProductViewController: UIViewController {
         setupUI()
         setupConstraints()
         fetchRecommendedProducts()
+        playerView.isHidden = true
+        goToCartAboveButton.isHidden = true
+        goToCartBelowButton.isHidden = true
+        fetchButtonState()
     }
 }
 
 extension ProductViewController{
-    private func setupUI(){
+     func setupUI(){
         navigationItem.largeTitleDisplayMode = .never
-        view.addSubviews(scrollView, fadeImageview)
-        fadeImageview.addSubview(addToCartBelowButton)
+        view.addSubviews(scrollView, fadeImageview, playerView, addToCartBelowButton, goToCartBelowButton)
         scrollView.addSubview(contentView)
-        contentView.addSubviews(posterImageview, productLabel, priceLabel, addToCartAboveButton, howToUseButton, stackview, lineImageView, titleLabel, descriptionLabel, recommendProductLabel, collectionView)
-        addToCartBelowButton.addSubview(purchasePriceLabel)
+        contentView.addSubviews(posterImageview, productLabel, priceLabel, addToCartAboveButton, goToCartAboveButton, howToUseButton, stackview, lineImageView, titleLabel, descriptionLabel, recommendProductLabel, collectionView)
+        addToCartAboveButton.addSubviews(minusButton,plusButton,quantityLabel)
+        addToCartBelowButton.addSubviews(minusBelowButton,plusBelowButton,quantityBelowLabel,purchasePriceLabel)
     }
     
-    private func setupConstraints(){
+     func setupConstraints(){
+        playerView.snp.makeConstraints { make in
+            make.width.equalTo(view.frame.size.width)
+            make.height.equalTo(view.frame.size.height)
+        }
+        
         scrollView.snp.makeConstraints { make in
             make.bottom.equalTo(fadeImageview.snp.bottom)
             make.horizontalEdges.top.equalTo(view.safeAreaLayoutGuide)
@@ -459,6 +551,50 @@ extension ProductViewController{
             make.centerY.equalToSuperview()
             make.right.equalToSuperview().inset(24)
         }
+        
+        fadeImageview.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview()
+            make.height.equalTo(137)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        addToCartBelowButton.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(56)
+        }
+        
+        plusButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(20)
+            make.left.equalTo(quantityLabel.snp.right).offset(8)
+            make.size.equalTo(24)
+        }
+        quantityLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.width.equalTo(40)
+        }
+        minusButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalTo(quantityLabel.snp.left).offset(-8)
+            make.size.equalTo(24)
+        }
+        
+        plusBelowButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalToSuperview().inset(20)
+            make.left.equalTo(quantityBelowLabel.snp.right).offset(8)
+            make.size.equalTo(24)
+        }
+        quantityBelowLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.width.equalTo(40)
+        }
+        minusBelowButton.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalTo(quantityBelowLabel.snp.left).offset(-8)
+            make.size.equalTo(24)
+        }
     }
 }
 
@@ -502,6 +638,20 @@ extension ProductViewController {
             }
         }
     }
+    
+    @objc
+    func watchButton(){
+        playerView.isHidden = false
+        self.playerView.load(withVideoId: "\(product.videoId)", playerVars: playerVars)
+        self.playerView.playVideo()
+    }
+    
+    @objc
+    func goToCartTapped(){
+        if let tabBarController = self.tabBarController {
+            tabBarController.selectedIndex = 2
+        }
+    }
 }
 
 
@@ -541,66 +691,246 @@ extension ProductViewController: UIScrollViewDelegate {
         if scrollView == self.scrollView {
             if scrollView.contentOffset.y > addToCartAboveButton.frame.maxY {
                 addToCartBelowButton.isHidden = false
+                goToCartBelowButton.isHidden = false
                 fadeImageview.isHidden = false
             } else {
                 addToCartBelowButton.isHidden = true
+                goToCartBelowButton.isHidden = true
                 fadeImageview.isHidden = true
             }
         }
     }
     
-    private func updateConstraintsForAddToCartBelowButton() {
-        if scrollView.contentOffset.y > addToCartAboveButton.frame.maxY {
-            
-            fadeImageview.snp.makeConstraints { make in
-                make.horizontalEdges.equalToSuperview()
-                make.height.equalTo(137)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
-            }
-            addToCartBelowButton.snp.makeConstraints { make in
-                make.bottom.equalToSuperview().inset(16)
-                make.horizontalEdges.equalToSuperview().inset(16)
-                make.height.equalTo(56)
-            }
-            
-        } else {
-            addToCartBelowButton.snp.remakeConstraints { make in
-                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-                make.horizontalEdges.equalToSuperview().inset(16)
-                make.height.equalTo(56)
-            }
-            fadeImageview.snp.remakeConstraints { make in
-                make.horizontalEdges.equalToSuperview()
-                make.height.equalTo(137)
-                make.bottom.equalTo(view.safeAreaLayoutGuide)
+    func updateConstraintsForAddToCartBelowButton() {
+        if scrollView.contentOffset.y < addToCartAboveButton.frame.maxY {
+            if !goToCartBelowButton.isHidden{
+                addToCartBelowButton.snp.remakeConstraints { make in
+                    make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+                    make.left.equalToSuperview().inset(16)
+                    make.height.equalTo(56)
+                }
+                
+                goToCartBelowButton.snp.remakeConstraints { make in
+                    make.centerY.equalTo(addToCartBelowButton)
+                    make.left.equalTo(addToCartBelowButton.snp.right).offset(8)
+                    make.right.equalToSuperview().inset(16)
+                    make.size.equalTo(56)
+                }
+                
+            }else{
+                addToCartBelowButton.snp.remakeConstraints { make in
+                    make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+                    make.horizontalEdges.equalToSuperview().inset(16)
+                    make.height.equalTo(56)
+                }
+                fadeImageview.snp.remakeConstraints { make in
+                    make.horizontalEdges.equalToSuperview()
+                    make.height.equalTo(137)
+                    make.bottom.equalTo(view.safeAreaLayoutGuide)
+                }
             }
         }
     }
 }
 
 extension ProductViewController{
-    func fecthButtonState(){
+    func fetchButtonState(){
         AF.request(Endpoints.getBasket.value, method: .get,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseDecodable(of: Basket.self) { [self] response in
             switch response.result {
             case .success(let basket):
                 for item in basket.basket {
                     if item.id == self.product.id {
-                        // Assuming you have some action to perform with the count
-                        let count = item.count
-                        // Perform your action with the count here
-                        print("Count of product \(self.product.id) in basket: \(count)")
-                        // Example: Update UI based on count
-                        DispatchQueue.main.async {
-                            // Example: Update UI based on count
-                            // self.updateUI(with: count)
-                        }
-                        return // Exit the loop if a match is found
+                        configureButton()
+                        count = item.count
+                        quantityLabel.text = "\(count)"
+                        quantityBelowLabel.text = "\(count)"
                     }
                 }
-                // If no match found, handle accordingly
                 print("Product \(self.product.id) not found in basket")
             case .failure(let error):
                 print(error)
+            }
+        }
+    }
+}
+
+extension ProductViewController{
+    func initialButtonConfigure(){
+        goToCartAboveButton.isHidden = true
+        goToCartAboveButton.isEnabled = false
+        minusButton.isHidden = true
+        plusButton.isHidden = true
+        quantityLabel.isHidden = true
+        
+        addToCartAboveButton.snp.remakeConstraints { make in
+            make.top.equalTo(priceLabel.snp.bottom).offset(16)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(56)
+        }
+            
+        addToCartAboveButton.setTitle("В корзину", for: .normal)
+        addToCartAboveButton.setTitleColor(.white, for: .normal)
+        addToCartAboveButton.backgroundColor = .appBeige100
+        addToCartAboveButton.layer.cornerRadius = 25
+        addToCartAboveButton.clipsToBounds = true
+        addToCartAboveButton.contentHorizontalAlignment = .center
+        addToCartAboveButton.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
+        addToCartAboveButton.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
+       
+        addToCartBelowButton.setTitle("В корзину", for: .normal)
+        addToCartBelowButton.setTitleColor(.white, for: .normal)
+        addToCartBelowButton.backgroundColor = .appBeige100
+        addToCartBelowButton.layer.cornerRadius = 25
+        addToCartBelowButton.clipsToBounds = true
+        addToCartBelowButton.contentHorizontalAlignment = .left
+        addToCartBelowButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
+        addToCartBelowButton.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
+        addToCartBelowButton.addTarget(self, action: #selector(addToCartTapped), for: .touchUpInside)
+        
+        purchasePriceLabel.isHidden = false
+        goToCartAboveButton.isHidden = true
+        goToCartBelowButton.isHidden = true
+        quantityBelowLabel.isHidden = true
+        plusBelowButton.isHidden = true
+        minusBelowButton.isHidden = true
+        
+        addToCartBelowButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.height.equalTo(56)
+        }
+        
+        goToCartBelowButton.snp.removeConstraints()
+        
+    }
+    func configureButton(){
+        
+        goToCartAboveButton.isHidden = false
+        goToCartAboveButton.isEnabled = true
+        minusButton.isHidden = false
+        plusButton.isHidden = false
+        quantityLabel.isHidden = false
+        
+        addToCartAboveButton.setTitle("В корзине", for: .normal)
+        addToCartAboveButton.setTitleColor(.appBeige100, for: .normal)
+        addToCartAboveButton.layer.borderColor = UIColor.appBeige100.cgColor
+        addToCartAboveButton.layer.borderWidth = 2
+        addToCartAboveButton.backgroundColor = .white
+        addToCartAboveButton.layer.cornerRadius = 25
+        addToCartAboveButton.clipsToBounds = true
+        addToCartAboveButton.contentHorizontalAlignment = .left
+        addToCartAboveButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
+        addToCartAboveButton.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
+        
+        addToCartAboveButton.snp.remakeConstraints { make in
+            make.top.equalTo(priceLabel.snp.bottom).offset(16)
+            make.left.equalToSuperview().inset(16)
+            make.height.equalTo(56)
+        }
+        
+        goToCartAboveButton.snp.makeConstraints { make in
+            make.centerY.equalTo(addToCartAboveButton)
+            make.left.equalTo(addToCartAboveButton.snp.right).offset(8)
+            make.right.equalToSuperview().inset(16)
+            make.size.equalTo(56)
+        }
+
+        goToCartBelowButton.isHidden = false
+        goToCartBelowButton.isEnabled = true
+        purchasePriceLabel.isHidden = true
+        minusBelowButton.isHidden = false
+        plusBelowButton.isHidden = false
+        quantityBelowLabel.isHidden = false
+        
+        addToCartBelowButton.setTitle("В корзине", for: .normal)
+        addToCartBelowButton.setTitleColor(.appBeige100, for: .normal)
+        addToCartBelowButton.layer.borderColor = UIColor.appBeige100.cgColor
+        addToCartBelowButton.layer.borderWidth = 2
+        addToCartBelowButton.backgroundColor = .white
+        addToCartBelowButton.layer.cornerRadius = 25
+        addToCartBelowButton.clipsToBounds = true
+        addToCartBelowButton.contentHorizontalAlignment = .left
+        addToCartBelowButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 24, bottom: 0, right: 0)
+        addToCartBelowButton.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
+        
+    }
+    
+}
+
+extension ProductViewController{
+    @objc
+    func addToCartTapped(){
+        let parameters = [
+            "product_id": product.id,
+            "count": count
+            ]
+        
+        AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                fetchButtonState()
+            case .failure(let error):
+                print("Error: \(error)")
+                inputViewController?.showToast(type: .error)
+            }
+        }
+    }
+}
+
+extension ProductViewController{
+    @objc func minusButtonTapped() {
+        if count > 1{
+            descreaseCart()            
+        }else{
+            initialButtonConfigure()
+            deleteFromCart()
+        }
+    }
+    
+    func descreaseCart() {
+        let parameters: [String: Any] = [
+            "product_id": product.id,
+            "count": count
+        ]
+        
+        AF.request(Endpoints.decrease.value, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                print(count)
+                fetchButtonState()
+            case .failure(let error):
+                print("Error: \(error)")
+                self.showToast(type: .error)
+            }
+        }
+    }
+    
+    func deleteFromCart(){
+        AF.request(Endpoints.basketProduct(productID: product.id).value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                fetchButtonState()
+            case .failure(let error):
+                print("Error: \(error)")
+                self.showToast(type: .error)
+            }
+        }
+    }
+    
+    @objc func plusButtonTapped() {
+        let parameters: [String: Any] = [
+            "product_id": product.id,
+            "count": count
+        ]
+        
+        AF.request(Endpoints.increase.value, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                print(count)
+                fetchButtonState()
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
             }
         }
     }

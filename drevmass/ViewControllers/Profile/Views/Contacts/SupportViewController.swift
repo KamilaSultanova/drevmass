@@ -104,28 +104,28 @@ extension SupportViewController{
     @objc
     func keyboardWillAppear() {
         sendButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
                 make.horizontalEdges.equalToSuperview().inset(16)
                 make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
                 make.height.equalTo(48)
-            }
         }
     }
     
     @objc
     func keyboardWillHide() {
         sendButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
                 make.horizontalEdges.equalToSuperview().inset(16)
                 make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
                 make.height.equalTo(48)
-            }
         }
     }
     
     @objc
     func backButtonTapped() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        keyboardWillAppear()
     }
     
     func textViewDidChange(_ textView: UITextView) {

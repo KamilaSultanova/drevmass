@@ -15,6 +15,22 @@ class OrderViewController: UIViewController {
     
     private var typeOfInputs: [TextFieldWithPadding: UILabel] = [:]
     
+    private var productName: String = ""
+    
+    private var productPrice: Int = 0
+    
+    private var productId: Int = 0
+    
+    private var productQty: Int = 0
+    
+    private var bonus: Int = 0
+    
+    var finalPrice: Int = 0
+    
+    var totalBonus: Int = 0
+    
+    var selectedProductArray: [ProductProtocol] = []
+        
     private lazy var mainLabel: UILabel = {
         let label = UILabel()
         label.font = .appFont(ofSize: 22, weight: .bold)
@@ -112,6 +128,20 @@ class OrderViewController: UIViewController {
         button.addTarget(self, action: #selector(clear), for: .touchDown)
         return button
     }()
+    
+    private lazy var purchaseButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("Отправить заявку", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.layer.cornerRadius = 25
+        button.clipsToBounds = true
+        button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
+        button.addTarget(self, action: #selector(purchaseButtonTapped), for: .touchDown)
+        button.isEnabled = false
+        button.backgroundColor = .appBeige20
+        
+        return button
+    }()
 
     // MARK: - Lifecycle
     
@@ -126,12 +156,14 @@ class OrderViewController: UIViewController {
         setupConstraints()
         configureViews()
         segmentControlValueChanged(segmentControl)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillAppear), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 }
 
 extension OrderViewController{
     private func setupUI(){
-        view.addSubviews(mainLabel, segmentControl, emailTextField, nameTextField, phoneTextField, clearNameButton, clearEmailButton, clearPhoneButton)
+        view.addSubviews(mainLabel, segmentControl, emailTextField, nameTextField, phoneTextField, clearNameButton, clearEmailButton, clearPhoneButton, purchaseButton)
     }
     
     private func setupConstraints(){
@@ -181,6 +213,12 @@ extension OrderViewController{
             make.right.equalTo(emailTextField.snp.right)
             make.size.equalTo(24)
         }
+        
+        purchaseButton.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.height.equalTo(48)
+        }
     }
 }
 
@@ -202,8 +240,12 @@ extension OrderViewController{
             if let typeOfInput = typeOfInputs[emailTextField] {
                 typeOfInput.isHidden = false
             }
+            purchaseButton.isEnabled = true
+            purchaseButton.backgroundColor = .appBeige100
         case 1:
             clearTextFields()
+            purchaseButton.isEnabled = false
+            purchaseButton.backgroundColor = .appBeige20
         default:
             break
         }
@@ -231,6 +273,8 @@ extension OrderViewController{
         }
         
         if nameTextField.text!.isEmpty{
+            purchaseButton.isEnabled = false
+            purchaseButton.backgroundColor = .appBeige20
             if let typeOfInput = typeOfInputs[nameTextField] {
                 typeOfInput.isHidden = true
             }else{
@@ -241,6 +285,8 @@ extension OrderViewController{
         }
         
         if phoneTextField.text!.isEmpty{
+            purchaseButton.isEnabled = false
+            purchaseButton.backgroundColor = .appBeige20
             if let typeOfInput = typeOfInputs[phoneTextField] {
                 typeOfInput.isHidden = true
             }else{
@@ -251,6 +297,8 @@ extension OrderViewController{
         }
         
         if emailTextField.text!.isEmpty{
+            purchaseButton.isEnabled = false
+            purchaseButton.backgroundColor = .appBeige20
             if let typeOfInput = typeOfInputs[emailTextField] {
                 typeOfInput.isHidden = true
             }else{
@@ -264,6 +312,7 @@ extension OrderViewController{
     
     @objc
     func textEditDidBegin(_ sender: TextFieldWithPadding) {
+        keyboardWillAppear()
         sender.bottomBorderColor = .appBeige100
         if let typeOfInput = typeOfInputs[sender] {
             typeOfInput.textColor = .appBeige100
@@ -350,6 +399,10 @@ extension OrderViewController{
                 clearEmailButton.isHidden = false
             }
         }
+        if !phoneTextField.text!.isEmpty && !emailTextField.text!.isEmpty && !nameTextField.text!.isEmpty{
+            purchaseButton.isEnabled = true
+            purchaseButton.backgroundColor = .appBeige100
+        }
     }
     
     @objc
@@ -402,7 +455,8 @@ extension OrderViewController : UITextFieldDelegate {
     }
 }
 
-extension OrderViewController{
+extension OrderViewController: CartDelegate{
+
     func getUserInfo(){
         
         AF.request(Endpoints.userInfo.value, method: .get, headers: [
@@ -419,5 +473,90 @@ extension OrderViewController{
             }
         }
     }
+    
+    @objc
+    func purchaseButtonTapped(){
+        
+    AF.request(Endpoints.getBasket.value, method: .get,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseDecodable(of: Basket.self) { [self] response in
+            switch response.result {
+            case .success(let basket):
+                for product in basket.basket {
+                    productId = product.id
+                    productQty = product.count
+                    productName = product.name
+                    productPrice = product.price
+                    
+                    let product: [String: Any] = [
+                        "name": productName,
+                        "price": productPrice,
+                        "product_id": productId,
+                        "quantity": productQty
+                    ]
+                    let parameters: [String: Any] = [
+                        "bonus": totalBonus,
+                        "crmlink": "",
+                        "email": emailTextField.text ?? "",
+                        "phone_number": phoneTextField.text ?? "",
+                        "username": nameTextField.text ?? "",
+                        "total_price": finalPrice ,
+                        "products": [product]
+                    ]
+                    
+                    
+                    AF.request(Endpoints.order.value, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: [
+                        .authorization(bearerToken: AuthService.shared.token)
+                    ]).responseData { [self] response in
+                        switch response.result {
+                        case .success(_):
+                            deleteAllProducts()
+                            let succesOrderVC = SuccesOrderViewController()
+                            presentPanModal(succesOrderVC)
+                        case .failure(let error):
+                            print("Error: \(error)")
+                            inputViewController?.showToast(type: .error)
+                        }
+                    }
+                    
+                    print(parameters)
+                }
+            case .failure(let error):
+                print(error)
+            }
+        }
 
+    }
+    
+    func deleteAllProducts() {
+        AF.request(Endpoints.basket.value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+            switch response.result {
+            case .success(_):
+                print("deleted")
+            case .failure(let error):
+                print("Error: \(error)")
+                self.inputViewController?.showToast(type: .error)
+            }
+        }
+    }
+
+}
+
+private extension OrderViewController {
+    
+    @objc
+    func keyboardWillAppear() {
+        purchaseButton.snp.remakeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+            make.height.equalTo(48)
+        }
+    }
+    
+    @objc
+    func keyboardWillHide() {
+        purchaseButton.snp.remakeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.height.equalTo(48)
+        }
+    }
 }

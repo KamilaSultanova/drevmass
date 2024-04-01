@@ -10,9 +10,25 @@ import SnapKit
 import SwiftyJSON
 import Alamofire
 
-class InfoBonusViewController: UIViewController {
+class InfoBonusViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - UI Elements
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+
+        scrollView.delegate = self
+        scrollView.showsVerticalScrollIndicator = true
+        scrollView.isScrollEnabled = true
+        
+        return scrollView
+    }()
+    
+    private lazy var contentView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+     
+        return view
+    }()
     
     let descriptionLabel : UILabel = {
         let label = UILabel()
@@ -45,11 +61,23 @@ class InfoBonusViewController: UIViewController {
     }
     
     func setupUI(){
-        view.addSubview(descriptionLabel)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubview(descriptionLabel)
+        
+        scrollView.snp.makeConstraints { make in
+            make.top.horizontalEdges.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+
+        contentView.snp.makeConstraints { make in
+            make.horizontalEdges.bottom.equalTo(scrollView.contentLayoutGuide)
+            make.top.equalTo(scrollView.contentLayoutGuide).inset(16)
+            make.width.equalTo(scrollView.frameLayoutGuide)
+            make.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide)
+        }
         
         descriptionLabel.snp.makeConstraints { make in
-            make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.edges.equalToSuperview().inset(16)
         }
     }
     

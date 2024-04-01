@@ -387,11 +387,9 @@ extension RegistrationViewController {
             scrollView.scrollIndicatorInsets = contentInsets
         
         continueButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(32)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+            make.height.equalTo(56)
         }
         
     }
@@ -402,11 +400,9 @@ extension RegistrationViewController {
         scrollView.scrollIndicatorInsets = UIEdgeInsets.zero
         
         continueButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(enterLabel.snp.top).offset(-24)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(32)
+            make.bottom.equalTo(enterLabel.snp.top).offset(-24)
+            make.height.equalTo(56)
         }
     }
     

@@ -206,6 +206,8 @@ private extension ChangePasswordViewController {
     
     private func configureViews() {
         if currentPasswordTextField.text!.isEmpty{
+            resetButton.isEnabled = false
+            resetButton.backgroundColor = .appBeige20
             if let typeOfInput = typeOfInputs[currentPasswordTextField] {
                 typeOfInput.isHidden = true
             }else{
@@ -216,6 +218,8 @@ private extension ChangePasswordViewController {
         }
         
         if newPasswordTextField.text!.isEmpty{
+            resetButton.isEnabled = false
+            resetButton.backgroundColor = .appBeige20
             if let typeOfInput = typeOfInputs[newPasswordTextField] {
                 typeOfInput.isHidden = true
             }else{
@@ -231,22 +235,18 @@ private extension ChangePasswordViewController{
     @objc
     func keyboardWillAppear() {
         resetButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+            make.height.equalTo(48)
         }
     }
     
     @objc
     func keyboardWillHide() {
         resetButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.height.equalTo(48)
         }
     }
     
@@ -277,6 +277,7 @@ private extension ChangePasswordViewController{
     
     @objc
     func textEditDidBegin(_ sender: TextFieldWithPadding) {
+        keyboardWillAppear()
         sender.bottomBorderColor = .appBeige100
     }
     
@@ -300,6 +301,7 @@ private extension ChangePasswordViewController{
             typeOfInput.isHidden = false
         }
         sender.bottomBorderColor = .appGray50
+        configureViews()
         
     }
     

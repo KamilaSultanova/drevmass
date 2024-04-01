@@ -56,7 +56,8 @@ class PasswordResetViewController: UIViewController {
         textfield.autocorrectionType = .no
         textfield.padding.left = 0.0
         textfield.addTarget(self, action: #selector(textEditDidChanged), for: .editingChanged)
-    
+        textfield.addTarget(self, action: #selector(textEditDidBegin), for: .editingDidBegin)
+ 
         return textfield
     }()
     
@@ -71,7 +72,7 @@ class PasswordResetViewController: UIViewController {
         let button = UIButton()
         button.setTitle("Сбросить пароль", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor(red: 0.83, green: 0.78, blue: 0.70, alpha: 1.00)
+        button.backgroundColor = .appBeige20
         button.layer.cornerRadius = 25
         button.clipsToBounds = true
         button.titleLabel?.font = .appFont(ofSize: 17, weight: .semiBold)
@@ -142,28 +143,29 @@ private extension PasswordResetViewController {
     @objc
     func keyboardWillAppear() {
         resetButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(32)
+            make.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-16)
+            make.height.equalTo(56)
         }
     }
     
     @objc
     func keyboardWillHide() {
         resetButton.snp.remakeConstraints { make in
-            if #available(iOS 15.0, *) {
-                make.horizontalEdges.equalToSuperview().inset(32)
-                make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-                make.height.equalTo(56)
-            }
+            make.horizontalEdges.equalToSuperview().inset(32)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.height.equalTo(56)
         }
     }
     
     @objc
     func backButtonTapped() {
         dismiss(animated: true, completion: nil)
+    }
+    
+    @objc
+    func textEditDidBegin(_ sender: TextFieldWithPadding) {
+        keyboardWillAppear()
     }
     
     @objc
@@ -181,7 +183,7 @@ private extension PasswordResetViewController {
         emailTextField.text = ""
         clearButton.isHidden = true
         resetButton.isEnabled = false
-        resetButton.backgroundColor = UIColor(red: 0.83, green: 0.78, blue: 0.70, alpha: 1.00)
+        resetButton.backgroundColor = .appBeige20
     }
     
     @objc

@@ -10,6 +10,8 @@ import SnapKit
 import Alamofire
 import SwiftyJSON
 
+protocol CartDelegate: AnyObject{
+}
 
 class CartViewController: UIViewController, UIScrollViewDelegate {
 
@@ -22,6 +24,8 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
     var recommendProductArray: [Basket.Product] = []
     
     var updateProductArray: [ProductDetail.Product] = []
+    
+    weak var cartDelegate: CartDelegate?
     
     private lazy var deleteButton: UIBarButtonItem = {
         let button = UIBarButtonItem(image: .delete.withTintColor(.appGray70), style: .plain, target: self, action: #selector(deleteTapped))
@@ -202,7 +206,7 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         return label
     }()
     
-    private lazy var discountLabel: UILabel = {
+    lazy var discountLabel: UILabel = {
         let label = UILabel()
         label.font = .appFont(ofSize: 13, weight: .regular)
         label.textColor = UIColor(red: 0.98, green: 0.36, blue: 0.36, alpha: 1.00)
@@ -289,7 +293,7 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         return button
     }()
     
-    private lazy var purchasePriceLabel: UILabel = {
+    lazy var purchasePriceLabel: UILabel = {
         let label = UILabel()
         label.font = .appFont(ofSize: 17, weight: .semiBold)
         label.text = "100"
@@ -299,6 +303,10 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         
         return label
     }()
+    
+    var discount: Int?
+    var price: Int?
+    var purchasePrice: Int?
 
     // MARK: - Lifecycle
 
@@ -329,7 +337,6 @@ extension CartViewController {
     private func setupUI() {
         
         view.addSubviews(scrollView, fadeImageview, purchaseButton)
-//        fadeImageview.addSubview(purchaseButton)
         scrollView.addSubview(contentView)
         contentView.addSubviews(emptyСartImageView,emptyCartLabel, instrustionsLabel, catalogButton, productsView)
         productsView.addSubviews( tableView, bonusLabel, bonusIcon, bonusSwitch, bonusInfoLabel, promocodeButton, priceView, recommendProductLabel, collectionView)
@@ -492,6 +499,7 @@ extension CartViewController {
             emptyСartImageView.isHidden = false
             instrustionsLabel.isHidden = false
             catalogButton.isHidden = false
+            purchaseButton.isHidden = true
             if let rightButton = navigationController?.navigationBar.viewWithTag(1) as? UIButton {
                 rightButton.isHidden = true
             }
@@ -502,6 +510,7 @@ extension CartViewController {
             emptyСartImageView.isHidden = true
             instrustionsLabel.isHidden = true
             catalogButton.isHidden = true
+            purchaseButton.isHidden = false
             if let rightButton = navigationController?.navigationBar.viewWithTag(1) as? UIButton {
                 rightButton.isHidden = false
             }
@@ -562,9 +571,13 @@ extension CartViewController{
     
     @objc
     func orderButtonTapped(){
-        print("Order button tapped")
         let orderVC = OrderViewController()
-        navigationController?.pushViewController(orderVC, animated: true)
+        orderVC.finalPrice = purchasePrice!
+        orderVC.totalBonus = discount!
+        orderVC.selectedProductArray = selectedProductArray
+        let orderNavigationController = UINavigationController(rootViewController: orderVC)
+        orderVC.hidesBottomBarWhenPushed = true
+        self.navigationController?.pushViewController(orderVC, animated: true)
     }
 }
 
@@ -630,26 +643,32 @@ extension CartViewController{
                         cartTabBarItem?.badgeValue = "\(totalCount)"
                         }
                     
-                    
+                   
                     if bonusSwitch.isOn == true{
                         if Double(basket.bonus) < Double(basket.totalPrice) * 0.3{
                             discountLabel.text = "-\(basket.bonus) ₽ "
                             finalPriceLabel.text = "\((basket.basketPrice - basket.bonus).formattedString()) ₽"
+                            discount = basket.bonus
+                            price = basket.basketPrice - basket.bonus
                         }else{
                             discountLabel.text = "-\(Int(Double(basket.totalPrice) * 0.3)) ₽ "
                             finalPriceLabel.text = "\((basket.basketPrice - Int(Double(basket.totalPrice) * 0.3)).formattedString()) ₽"
+                            discount = Int(Double(basket.totalPrice) * 0.3)
+                            price = (basket.basketPrice - Int(Double(basket.totalPrice) * 0.3))
                         }
                     }else{
                         discountLabel.text = "0 ₽ "
                         finalPriceLabel.text = "\(basket.basketPrice.formattedString()) ₽"
+                        discount = 0
+                        price = basket.basketPrice
                     }
                     purchasePriceLabel.text = finalPriceLabel.text
-                    
+                    purchasePrice = price
                     tableView.reloadData()
                     
                     recommendProductArray = basket.products
                     collectionView.reloadData()
-                    
+    
                 case .failure(let error):
                     self.showToast(type: .error)
                     print(error)
@@ -735,4 +754,5 @@ extension CartViewController: ListTableViewCellDelegate{
         fetchCart()
     }
 }
+
 
