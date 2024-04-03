@@ -216,7 +216,7 @@ private extension CoursesViewController {
 					self.coursesArray = courses
 				case .failure(let error):
                     print("error")
-//					self.showToast(type: .error, title: error.localizedDescription)
+					self.showToast(type: .error, title: error.localizedDescription)
 			}
 		}
 	}

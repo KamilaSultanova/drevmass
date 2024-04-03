@@ -415,6 +415,16 @@ class ProductViewController: UIViewController {
                                    height: recommendProduct.height,
                                    size: recommendProduct.size,
                                    viewed: recommendProduct.viewed)
+        }else if let lessonProduct = product as? LessonProducts.UsedProducts {
+            self.product = Product(id: lessonProduct.id,
+                                   imageUrl: lessonProduct.imageUrl,
+                                   videoId: lessonProduct.video_src,
+                                   price: lessonProduct.price,
+                                   name: lessonProduct.name,
+                                   description: lessonProduct.description,
+                                   height: lessonProduct.height,
+                                   size: lessonProduct.size,
+                                   viewed: lessonProduct.viewed)
         }else if let recommendProduct = product as? Basket.Product {
             self.product = Product(id: recommendProduct.id,
                                    imageUrl: recommendProduct.imageUrl,
@@ -718,11 +728,35 @@ extension ProductViewController: UIScrollViewDelegate {
                 }
                 
             }else{
+                if goToCartAboveButton.isHidden{
+                    goToCartBelowButton.isHidden = true
+                    
+                    addToCartBelowButton.snp.remakeConstraints { make in
+                        make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+                        make.horizontalEdges.equalToSuperview().inset(16)
+                        make.height.equalTo(56)
+                    }
+                    
+                    fadeImageview.snp.remakeConstraints { make in
+                        make.horizontalEdges.equalToSuperview()
+                        make.height.equalTo(137)
+                        make.bottom.equalTo(view.safeAreaLayoutGuide)
+                    }
+                    return
+                }
+                goToCartBelowButton.snp.remakeConstraints { make in
+                    make.centerY.equalTo(addToCartBelowButton)
+                    make.left.equalTo(addToCartBelowButton.snp.right).offset(8)
+                    make.right.equalToSuperview().inset(16)
+                    make.size.equalTo(56)
+                }
+                
                 addToCartBelowButton.snp.remakeConstraints { make in
                     make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-                    make.horizontalEdges.equalToSuperview().inset(16)
+                    make.left.equalToSuperview().inset(16)
                     make.height.equalTo(56)
                 }
+                
                 fadeImageview.snp.remakeConstraints { make in
                     make.horizontalEdges.equalToSuperview()
                     make.height.equalTo(137)
@@ -834,9 +868,7 @@ extension ProductViewController{
             make.right.equalToSuperview().inset(16)
             make.size.equalTo(56)
         }
-
-        goToCartBelowButton.isHidden = false
-        goToCartBelowButton.isEnabled = true
+        
         purchasePriceLabel.isHidden = true
         minusBelowButton.isHidden = false
         plusBelowButton.isHidden = false
@@ -875,6 +907,7 @@ extension ProductViewController{
             }
         }
     }
+
 }
 
 extension ProductViewController{

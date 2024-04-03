@@ -17,6 +17,8 @@ class BookmarkViewController: UIViewController {
             tableView.reloadData()
         }
     }
+    
+    var courseID:Int?
 
     // MARK: - UI Elements
     
@@ -103,12 +105,14 @@ class BookmarkViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         title = "Мои закладки"
+        
     }
 }
 
 private extension BookmarkViewController {
     func setupViews() {
         navigationController?.navigationBar.barTintColor = .white
+        navigationController?.navigationBar.topItem?.title = " "
         navigationController?.navigationBar.tintColor = UIColor(red: 0.71, green: 0.64, blue: 0.5, alpha: 1)
         view.backgroundColor = .white
 
@@ -155,7 +159,9 @@ private extension BookmarkViewController {
             switch response.result {
             case .success(let favoritesArray):
                 self.coursesArray = favoritesArray
-                print(favoritesArray)
+                for item in favoritesArray{
+                    self.courseID = item.course_id
+                }
                 self.configureViews()
             case .failure(let error):
                 print(error.localizedDescription)
@@ -186,8 +192,9 @@ extension BookmarkViewController: UITableViewDelegate, UITableViewDataSource, Le
         return 310
     }
     
-    func didSelectLesson(_ lesson: CourseDetail.Lesson) {
+    func didSelectLesson(_ lesson: LessonProtocol) {
         let lessonVC = LessonViewController(lesson: lesson)
+        lessonVC.courseId = courseID
         navigationController?.show(lessonVC, sender: self)
     }
 }

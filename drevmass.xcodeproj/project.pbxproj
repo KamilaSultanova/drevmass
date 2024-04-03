@@ -95,6 +95,8 @@
 		8F987EF72BAF07600086388B /* Basket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987EF62BAF07600086388B /* Basket.swift */; };
 		8F987EFB2BB15A690086388B /* OrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987EFA2BB15A690086388B /* OrderViewController.swift */; };
 		8F987F032BBAA39B0086388B /* SuccesOrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987F022BBAA39B0086388B /* SuccesOrderViewController.swift */; };
+		8F987F052BBC11C50086388B /* LessonProducts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987F042BBC11C50086388B /* LessonProducts.swift */; };
+		8F987F092BBDE5FA0086388B /* LessonProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F987F082BBDE5FA0086388B /* LessonProtocol.swift */; };
 		8FD8D5D72BAA0C9800DD65AA /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */; };
 		9C84960395768DC4EA477185 /* Pods_drevmass_drevmassUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F97DDF01AF1D9827DB0BF5BA /* Pods_drevmass_drevmassUITests.framework */; };
 		FDC60C24CF0D5AFF5F09C777 /* Pods_drevmassTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */; };
@@ -209,6 +211,8 @@
 		8F987EF62BAF07600086388B /* Basket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Basket.swift; sourceTree = "<group>"; };
 		8F987EFA2BB15A690086388B /* OrderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderViewController.swift; sourceTree = "<group>"; };
 		8F987F022BBAA39B0086388B /* SuccesOrderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccesOrderViewController.swift; sourceTree = "<group>"; };
+		8F987F042BBC11C50086388B /* LessonProducts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonProducts.swift; sourceTree = "<group>"; };
+		8F987F082BBDE5FA0086388B /* LessonProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LessonProtocol.swift; sourceTree = "<group>"; };
 		8FD8D5D62BAA0C9800DD65AA /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
 		9BD710C3EBA6F3DD74C1DACD /* Pods-drevmass-drevmassUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-drevmass-drevmassUITests.debug.xcconfig"; path = "Target Support Files/Pods-drevmass-drevmassUITests/Pods-drevmass-drevmassUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C11352D611E1BB00BBFDE98 /* Pods_drevmassTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_drevmassTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -384,6 +388,7 @@
 				8F55EF682BA4475600514BCE /* Promocode.swift */,
 				8F55EF6C2BA4B61000514BCE /* User.swift */,
 				8F987EF62BAF07600086388B /* Basket.swift */,
+				8F987F042BBC11C50086388B /* LessonProducts.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -459,6 +464,7 @@
 				8F11CFC82B9E4757007C7FDB /* BannerCollectionViewCell.swift */,
 				8F11CFC92B9E4757007C7FDB /* MarkedLessonCollectionViewCell.swift */,
 				8F11CFCA2B9E4757007C7FDB /* CourseTableViewCell.swift */,
+				8F987F082BBDE5FA0086388B /* LessonProtocol.swift */,
 			);
 			path = Cells;
 			sourceTree = "<group>";
@@ -937,6 +943,7 @@
 				8F11CFA22B9E4621007C7FDB /* Favorite.swift in Sources */,
 				8F2032062BAAAE6700A82FDD /* ProductDetail.swift in Sources */,
 				8F11CFDF2B9E4757007C7FDB /* CourseDetailViewController.swift in Sources */,
+				8F987F052BBC11C50086388B /* LessonProducts.swift in Sources */,
 				8F11CFD82B9E4757007C7FDB /* MarkedLessonCollectionViewCell.swift in Sources */,
 				8F55EF552BA22C9200514BCE /* Bonus.swift in Sources */,
 				8F55EF5E2BA2D49200514BCE /* NotificationsViewController.swift in Sources */,
@@ -951,6 +958,7 @@
 				8F2032082BAB63BC00A82FDD /* ProductProtocol.swift in Sources */,
 				8F55EF6F2BA5878500514BCE /* DataViewProtocol.swift in Sources */,
 				8F11CFA12B9E4621007C7FDB /* CourseDetail.swift in Sources */,
+				8F987F092BBDE5FA0086388B /* LessonProtocol.swift in Sources */,
 				8F11CFDB2B9E4757007C7FDB /* LessonViewController.swift in Sources */,
 				8F11CF4E2B9E44B8007C7FDB /* Numeric+Extension.swift in Sources */,
 			);

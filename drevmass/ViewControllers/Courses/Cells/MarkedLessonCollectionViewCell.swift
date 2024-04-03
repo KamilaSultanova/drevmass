@@ -21,13 +21,13 @@ class MarkedLessonCollectionViewCell: UICollectionViewCell {
         
         return view
     }()
-
+    
     private lazy var imageview: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
         imageView.clipsToBounds = true
-      
+        
         return imageView
     }()
     
@@ -72,7 +72,6 @@ class MarkedLessonCollectionViewCell: UICollectionViewCell {
     // MARK: - Lifecycle
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         setupViews()
         setupConstraints()
     }
@@ -81,10 +80,10 @@ class MarkedLessonCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setData(lesson: CourseDetail.Lesson) {
-        imageview.sd_setImage(with: URL(string: lesson.image))
+    func setData(lesson: Favorite.Lesson) {
+        imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(lesson.image)"))
         titleLabel.text = lesson.title
-        durationLabel.text = "\(lesson.id) урок · \(lesson.duration) мин"
+        durationLabel.text = "\(lesson.orderId) урок · \(Int(floor(Double(lesson.duration) / 60.0))) мин"
     }
 }
 

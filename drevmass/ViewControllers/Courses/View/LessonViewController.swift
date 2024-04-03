@@ -11,9 +11,11 @@ import Alamofire
 
 class LessonViewController: UIViewController, YTPlayerViewDelegate {
 
-    var lesson: CourseDetail.Lesson
+    var lesson: LessonProtocol
     
-    var products: [CourseDetail.UsedProducts] = []
+    var courseId: Int?
+    
+    var products: [LessonProducts.UsedProducts] = []
 
     // MARK: - UI Elements
     
@@ -44,7 +46,7 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
         let imageView = UIImageView()
         
         imageView.layer.cornerRadius = 16
-        imageView.sd_setImage(with: URL(string: lesson.image))
+        imageView.sd_setImage(with: URL(string: "http://45.12.74.158/\(lesson.image)"))
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
 
@@ -57,10 +59,11 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
         player.layer.cornerRadius = 16
         player.contentMode = .scaleAspectFill
         player.clipsToBounds = true
-        player.backgroundColor = .red
         player.delegate = self
+        
         return player
     }()
+    
     
     private lazy var playButton: UIButton = {
         let button = UIButton()
@@ -74,7 +77,6 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
     private lazy var timeLabel: UILabel = {
         let label = UILabel()
         
-        label.text = "\(lesson.duration) мин"
         label.textAlignment = .left
         label.font = .appFont(ofSize: 13, weight: .regular)
         label.textColor = .appGray60
@@ -86,7 +88,7 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
             .font: UIFont.appFont(ofSize: 13, weight: .bold)
         ]
         
-        let lessonTimeAttributedString = NSAttributedString(string: "\(lesson.duration)", attributes: boldAttributes)
+        let lessonTimeAttributedString = NSAttributedString(string: "\(Int(floor(Double(lesson.duration) / 60.0)))", attributes: boldAttributes)
         let attributedString = NSMutableAttributedString()
         attributedString.append(lessonTimeAttributedString)
         attributedString.append(NSAttributedString(string: " мин", attributes: regularAttributes))
@@ -129,7 +131,15 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
     private lazy var textLabel: UILabel = {
         let label = UILabel()
         
-        label.text = lesson.description
+        let attributedText = NSMutableAttributedString(string: lesson.description)
+        let kernValue: CGFloat = 0.75
+        attributedText.addAttribute(.kern, value: kernValue, range: NSRange(location: 0, length: attributedText.length))
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 5
+        attributedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedText.length))
+        
+        label.attributedText = attributedText
         label.textAlignment = .left
         label.font = .appFont(ofSize: 16, weight: .regular)
         label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1)
@@ -149,27 +159,27 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
         return label
     }()
     
-    private lazy var collectionView: UICollectionView = {
+    private lazy var collectionView: SelfSizingCollectionView = {
         let layout = UICollectionViewFlowLayout()
 
         layout.scrollDirection = .horizontal
         layout.sectionInset = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 0)
         layout.minimumInteritemSpacing = 10
 
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        let collectionView = SelfSizingCollectionView(frame: .zero, collectionViewLayout: layout)
 
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.isScrollEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
-//        collectionView.register(ProductPlateCell.self, forCellWithReuseIdentifier: ProductPlateCell.identifier)
+        collectionView.register(ProductPlateCell.self, forCellWithReuseIdentifier: "ProductPlateCell")
 
         return collectionView
     }()
     
     // MARK: - Lifecycle
     
-    init(lesson: CourseDetail.Lesson) {
+    init(lesson: LessonProtocol) {
         self.lesson = lesson
         super.init(nibName: nil, bundle: nil)
     }
@@ -188,6 +198,7 @@ class LessonViewController: UIViewController, YTPlayerViewDelegate {
         setupViews()
         setupConstraints()
         configureViews()
+        getProducts()
     }
 }
 
@@ -268,35 +279,57 @@ private extension LessonViewController {
     }
 }
 extension LessonViewController {
+    private func getProducts(){
+        AF.request(Endpoints.courseIdLessons(courseId: courseId!, lessonId: lesson.id).value, method: .get, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)])
+            .responseDecodable(of: LessonProducts.self){ response in
+                switch response.result {
+                case .success(let products):
+                    self.products = products.usedProducts
+                    self.collectionView.reloadData()
+                case .failure(let error):
+                    print(error)
+                    self.showToast(type: .error, title:"\(error)")
+                }
+            }
+    }
     
     @objc
     func addToBookmark() {
         var method = HTTPMethod.post
+        var url = Endpoints.favorites.value
+    
         if lesson.isFavorite {
             method = .delete
+            url = "http://185.100.67.103/api/favorites/\(lesson.id)"
         }
         
-        var parameters: [String: Int] = [
-            "lessonId": lesson.id
+        let headers: HTTPHeaders = [
+            .authorization(bearerToken: "\(AuthService.shared.token)")
         ]
-        
-        AF.request(Endpoints.favorites.value, method: method, parameters: parameters, headers: [.authorization(bearerToken: AuthService.shared.token)])
-            .response { response in
+            
+        AF.upload(multipartFormData: { multipartFormData in
+            if let textData = "\(self.lesson.id)".data(using: .utf8) {
+                    multipartFormData.append(textData, withName: "lesson_id")
+                }
+            },
+                to: url,
+                method: method,
+                headers: headers
+            ).validate(statusCode: 200..<300).responseData {
+                response in
                 switch response.result {
-                case .success(let data):
+                case .success:
                     print("Previous isFavorite: \(self.lesson.isFavorite)")
-
                     self.lesson.isFavorite.toggle()
                     self.configureViews()
-                    
                     print("New isFavorite: \(self.lesson.isFavorite)")
                 case .failure(let error):
-              
                     print(error.localizedDescription)
                     self.showToast(type: .error, title: error.localizedDescription)
                 }
             }
     }
+
 
     @objc
     func shareTapped() {
@@ -321,21 +354,21 @@ extension LessonViewController {
     func playButtonClicked() {
         playerView.isHidden = false
         playButton.isHidden = true
+        lessonImageView.isHidden = true
         self.playerView.delegate = self
-        self.playerView .load(withVideoId: "vBtlMwiOas4")
+        let playerVars: [String: Any] = [
+                "autoplay": 1,
+                "rel": 0
+            ]
+        self.playerView .load(withVideoId: "\(lesson.video)",playerVars: playerVars )
     }
     
     // MARK: - YTPlayerViewDelegate
 
-       func playerViewDidBecomeReady(_ playerView: YTPlayerView) {
-           playerView.playVideo()
-       }
-    
     func playerView(_ playerView: YTPlayerView, didChangeTo state: YTPlayerState) {
         switch state {
         case .ended:
-//            markVideoAsWatched(courseId: course!.id, lessonId: lesson.id)
-            print("Video is completed")
+            markVideoAsWatched(courseId: courseId!, lessonId: lesson.id)
         default:
             break
         }
@@ -386,8 +419,9 @@ extension LessonViewController: UICollectionViewDataSource, UICollectionViewDele
             fatalError("Unable to find a cell with identifier ProductPlateCell!")
         }
 
-//        cell.setData(lessonProduct: products[indexPath.row])
-//
+        cell.setdata(product: products[indexPath.row])
+        cell.productId = products[indexPath.row].id
+        cell.delegateLessonVC = self
         return cell
     }
 
@@ -396,10 +430,8 @@ extension LessonViewController: UICollectionViewDataSource, UICollectionViewDele
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let selectedProduct = products[indexPath.row]
-//        let productDetailVC = ProductDetailViewController(product: nil, lessonProduct: selectedProduct)
-
-//        navigationController?.pushViewController(productDetailVC, animated: true)
+        let productDetailVC = ProductViewController(product: products[indexPath.row])
+        navigationController?.pushViewController(productDetailVC, animated: true)
     }
 }
 

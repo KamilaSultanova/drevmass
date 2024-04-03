@@ -91,10 +91,10 @@ class LessonTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setData(lesson: CourseDetail.Lesson, row: Int) {
-        imageview.sd_setImage(with: URL(string: lesson.image))
+    func setData(lesson: LessonProtocol, row: Int) {
+        imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(lesson.image)"))
         titleLabel.text = lesson.title
-        let fullText = "\(row) урок · \(lesson.duration) мин"
+        let fullText = "\(row) урок · \(Int(floor(Double(lesson.duration) / 60.0))) мин"
             
         let attributedText = NSMutableAttributedString(string: fullText)
         

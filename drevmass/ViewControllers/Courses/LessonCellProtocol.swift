@@ -7,5 +7,5 @@
 import Foundation
 
 protocol LessonCellProtocol: AnyObject {
-    func didSelectLesson(_ lesson: CourseDetail.Lesson)
+    func didSelectLesson(_ lesson: LessonProtocol)
 }

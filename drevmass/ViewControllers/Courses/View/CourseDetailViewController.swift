@@ -68,7 +68,7 @@ class CourseDetailViewController: UIViewController {
         let imageview = UIImageView()
         
         imageview.contentMode = .scaleAspectFill
-        imageview.sd_setImage(with: URL(string: course.image))
+        imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(course.image)"))
         
         return imageview
     }()
@@ -129,7 +129,7 @@ class CourseDetailViewController: UIViewController {
         attributedString.append(lessonCountAttributedString)
         attributedString.append(lessonSuffixAttributedString)
         attributedString.append(NSAttributedString(string: " · ", attributes: semiboldAttributes))
-        attributedString.append(NSAttributedString(string: "\(course.duration)", attributes: boldAttributes))
+        attributedString.append(NSAttributedString(string: "\(Int(floor(Double(course.duration) / 60.0)))", attributes: boldAttributes))
         attributedString.append(NSAttributedString(string: " мин", attributes: regularAttributes))
         
         label.attributedText = attributedString
@@ -199,10 +199,20 @@ class CourseDetailViewController: UIViewController {
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         
-        label.textAlignment = .justified
+        label.textAlignment = .natural
         label.font = .appFont(ofSize: 16, weight: .regular)
         label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1)
-        label.numberOfLines = 20
+        label.numberOfLines = 0
+        
+        let attributedText = NSMutableAttributedString(string: "")
+        let kernValue: CGFloat = 0.75
+        attributedText.addAttribute(.kern, value: kernValue, range: NSRange(location: 0, length: attributedText.length))
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineSpacing = 5
+        attributedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedText.length))
+        
+        label.attributedText = attributedText
         
         return label
     }()
@@ -329,9 +339,8 @@ class CourseDetailViewController: UIViewController {
         view.backgroundColor = .appBackground
         setupViews()
         setupConstraints()
-        configureViews()
-        navigationItem.rightBarButtonItem = shareButton
         fetchCourseDetail()
+        navigationItem.rightBarButtonItem = shareButton
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -340,6 +349,7 @@ class CourseDetailViewController: UIViewController {
         navigationController?.navigationBar.tintColor = .white
         configureViews()
     }
+    
 }
 
 extension CourseDetailViewController {
@@ -359,14 +369,21 @@ extension CourseDetailViewController {
                     bannerLabel.text = "Начислим \(bonus.price) бонусов за прохождение курса"
                 }
                 if let description = detailedCourse.course {
-                    descriptionLabel.text = "\(detailedCourse.course!.description)"
+                    let attributedText = NSMutableAttributedString(string: "\(detailedCourse.course!.description)")
+                    let kernValue: CGFloat = 0.75
+                    attributedText.addAttribute(.kern, value: kernValue, range: NSRange(location: 0, length: attributedText.length))
+
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.lineSpacing = 5
+                    attributedText.addAttribute(.paragraphStyle, value: paragraphStyle, range: NSRange(location: 0, length: attributedText.length))
+                    
+                    descriptionLabel.attributedText = attributedText
                 }
                 if let lessons = detailedCourse.course?.lessons {
                     lessonsArray = lessons
                     for lesson in lessons {
                         if lesson.completed == true {
-                            startButton.isHidden = true
-                            configureViews()
+                            startLesson()
                             viewedLesson += 1
                             progressBar.setProgress(Float(viewedLesson) / Float(lessonsArray.count), animated: false)
                             progressLabel.text = "\(viewedLesson) из \(lessonsArray.count)"
@@ -443,7 +460,6 @@ extension CourseDetailViewController {
             make.top.equalToSuperview().inset(12)
             make.right.equalToSuperview().inset(16)
             make.left.equalTo(progressTitleLabel.snp.right).offset(8)
-            make.width.equalTo(44)
         }
         
         progressBar.snp.makeConstraints { make in
@@ -509,7 +525,6 @@ extension CourseDetailViewController {
             make.top.equalToSuperview().inset(16)
             make.right.equalToSuperview().inset(20)
             make.height.equalTo(24)
-            make.width.equalTo(77)
         }
         
         bonusLabel.snp.makeConstraints { make in
@@ -561,14 +576,7 @@ extension CourseDetailViewController {
             }
         }
         if startButton.isHidden == true {
-            progressView.isHidden = false
-            courseView.snp.makeConstraints { make in
-                make.top.equalTo(lessonLabel.snp.bottom).offset(25)
-            }
-            descriptionLabel.snp.remakeConstraints { make in
-                make.top.equalTo(progressView.snp.bottom).offset(12)
-                make.horizontalEdges.equalToSuperview().inset(16)
-            }
+            startLesson()
         } else {
             progressView.isHidden = true
         }
@@ -601,7 +609,7 @@ extension CourseDetailViewController: UITableViewDelegate, UITableViewDataSource
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedLesson = lessonsArray[indexPath.row]
         let LessonVC = LessonViewController(lesson: selectedLesson)
-        
+        LessonVC.courseId = course.id
         navigationController?.show(LessonVC, sender: self)
     }
 }
@@ -649,8 +657,18 @@ extension CourseDetailViewController {
     func startLesson() {
         startButton.isHidden = true
         progressView.isHidden = false
-        courseView.snp.makeConstraints { make in
-            make.top.equalTo(lessonLabel.snp.bottom).offset(25)
+       
+        titleLabel.snp.remakeConstraints { make in
+            make.bottom.equalTo(lessonLabel.snp.top).offset(-12)
+            make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview().inset(19)
+            make.height.equalTo(70)
+        }
+        
+        lessonLabel.snp.remakeConstraints { make in
+            make.left.equalTo(playImageview.snp.right).offset(6)
+            make.bottom.equalTo(courseView.snp.top).offset(-20)
+            make.right.equalToSuperview().inset(16)
         }
         descriptionLabel.snp.remakeConstraints { make in
             make.top.equalTo(progressView.snp.bottom).offset(12)

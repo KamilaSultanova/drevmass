@@ -254,10 +254,9 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductPlateCell", for: indexPath) as? ProductPlateCell else {
             fatalError("Unable to find a cell with identifier \(ProductPlateCell.self)!")
         }
-//        cell.product = productArray[indexPath.row]
         cell.setdata(product: productArray[indexPath.row])
         cell.productId = productArray[indexPath.row].id
-        cell.delegate = self
+        cell.delegateCatalogVC = self
         
         return cell
     }

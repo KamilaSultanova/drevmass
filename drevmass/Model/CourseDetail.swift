@@ -29,7 +29,7 @@ struct CourseDetail: Decodable  {
         let promo_type: String
     }
 
-    struct Lesson: Decodable {
+    struct Lesson: Decodable, LessonProtocol {
         enum CodingKeys: String, CodingKey {
             case id
             case name
@@ -55,14 +55,14 @@ struct CourseDetail: Decodable  {
         let used_products: [UsedProducts]?
     }
     
-    struct UsedProducts: Decodable {
+    struct UsedProducts: Decodable, ProductProtocol {
         let description: String
         let height: String
         let id: Int
-        let image_src: String
+        let imageUrl: String
         let price: Int
         let size: String
-        let title: String
+        let name: String
         let video_src: String
         let viewed: Int
     }

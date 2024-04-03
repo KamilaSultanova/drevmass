@@ -743,7 +743,6 @@ extension CartViewController{
 extension CartViewController: ProductPlateCellDelegate {
     func addToCartButtonTapped(productId: Int, tabBarController: UITabBarController?) {
         fetchCart()
-        
     }
 }
 

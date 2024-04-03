@@ -22,13 +22,15 @@ class ProductPlateCell: UICollectionViewCell {
     
     var count = 1
         
-    weak var delegate: CatalogViewController?
+    weak var delegateCatalogVC: CatalogViewController?
     
     weak var delegateProductVC: ProductViewController?
     
     weak var delegateCartVC: CartViewController?
     
     weak var delegateProductCell: ProductPlateCellDelegate?
+    
+    weak var delegateLessonVC: LessonViewController?
     
     weak var tabBarController: UITabBarController?
     
@@ -124,7 +126,53 @@ extension ProductPlateCell {
     @objc private func cartButtonTapped() {
         guard let productId = productId else { return }
 
-        if let tabBarController = self.delegate?.tabBarController,
+        if let tabBarController = self.delegateCatalogVC?.tabBarController,
+           let cartTabBarItem = tabBarController.tabBar.items?[2],
+           let currentBadgeValue = cartTabBarItem.badgeValue,
+           var totalCount = Int(currentBadgeValue) {
+            
+            if isAddedToCart {
+                totalCount -= 1
+                if totalCount > 0 {
+                    cartTabBarItem.badgeValue = "\(totalCount)"
+                } else {
+                    cartTabBarItem.badgeValue = "0"
+                }
+                
+                AF.request(Endpoints.basketProduct(productID: productId).value, method: .delete, encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                    switch response.result {
+                    case .success(_):
+                        isAddedToCart = false
+                        fetchInStock()
+                    case .failure(let error):
+                        print("Error: \(error)")
+                        inputViewController?.showToast(type: .error)
+                    }
+                }
+            } else {
+                totalCount += 1
+                cartTabBarItem.badgeValue = "\(totalCount)"
+                
+                let parameters = [
+                   "product_id": productId,
+                   "count": count
+                    ]
+                
+                AF.request(Endpoints.basket.value, method: .post, parameters: parameters as Parameters,encoding: JSONEncoding.default, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData { [self] response in
+                    switch response.result {
+                    case .success(_):
+                        print("success")
+                        isAddedToCart = true
+                        fetchInStock()
+                    case .failure(let error):
+                        print("Error: \(error)")
+                        inputViewController?.showToast(type: .error)
+                    }
+                }
+            }
+
+        }
+        if let tabBarController = self.delegateLessonVC?.tabBarController,
            let cartTabBarItem = tabBarController.tabBar.items?[2],
            let currentBadgeValue = cartTabBarItem.badgeValue,
            var totalCount = Int(currentBadgeValue) {
@@ -188,7 +236,7 @@ extension ProductPlateCell {
                     case .success(_):
                         isAddedToCart = false
                         fetchInStock()
-                        delegateProductCell?.addToCartButtonTapped(productId: productId, tabBarController: delegate?.tabBarController)
+                        delegateProductCell?.addToCartButtonTapped(productId: productId, tabBarController: delegateCatalogVC?.tabBarController)
                     case .failure(let error):
                         print("Error: \(error)")
                         inputViewController?.showToast(type: .error)
@@ -209,7 +257,7 @@ extension ProductPlateCell {
                         print("success")
                         isAddedToCart = true
                         fetchInStock()
-                        delegateProductCell?.addToCartButtonTapped(productId: productId, tabBarController: delegate?.tabBarController)
+                        delegateProductCell?.addToCartButtonTapped(productId: productId, tabBarController: delegateCatalogVC?.tabBarController)
                     case .failure(let error):
                         print("Error: \(error)")
                         inputViewController?.showToast(type: .error)
