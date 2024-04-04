@@ -21,7 +21,7 @@ class CoursesViewController: UIViewController {
     var bannersArray: [Banner] = [
         Banner(
             title: "Получайте бонусы за прохождение курсов",
-            subtitle: "Начислим до 0 ₽ бонусами."
+            subtitle: "Начислим до 1500 ₽ \nбонусами."
         )
 	]
     

@@ -6,10 +6,15 @@
 
 import UIKit
 import SnapKit
+import Alamofire
 
 class MarkedLessonCollectionViewCell: UICollectionViewCell {
     
     // MARK: - UI Elements
+    
+    var lessonId: Int?
+    
+    weak var delegateBookmarkVC: BookmarkViewController?
     
     private lazy var backgroundview: UIView = {
         let view = UIView()
@@ -43,6 +48,7 @@ class MarkedLessonCollectionViewCell: UICollectionViewCell {
         let button = UIButton()
         
         button.setImage(.CourseButton.bookmarkFilled, for: .normal)
+        button.addTarget(self, action: #selector(deleteFromFavorites), for: .touchUpInside)
         
         return button
     }()
@@ -81,6 +87,7 @@ class MarkedLessonCollectionViewCell: UICollectionViewCell {
     }
     
     func setData(lesson: Favorite.Lesson) {
+        lessonId = lesson.id
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(lesson.image)"))
         titleLabel.text = lesson.title
         durationLabel.text = "\(lesson.orderId) урок · \(Int(floor(Double(lesson.duration) / 60.0))) мин"
@@ -124,6 +131,23 @@ private extension MarkedLessonCollectionViewCell {
             make.top.equalTo(durationLabel.snp.bottom).offset(8)
             make.horizontalEdges.equalTo(durationLabel)
             make.bottom.equalToSuperview().inset(12)
+        }
+    }
+}
+
+extension MarkedLessonCollectionViewCell{
+    @objc
+    func deleteFromFavorites(){
+        var url = "http://185.100.67.103/api/favorites/\(lessonId!)"
+      
+        AF.request(url, method: .delete, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseData{ [self] response in
+            switch response.result {
+            case .success(_):
+                self.delegateBookmarkVC?.updateData()
+            case .failure(let error):
+                print(error.localizedDescription)
+                self.inputViewController?.showToast(type: .error, title: error.localizedDescription)
+            }
         }
     }
 }

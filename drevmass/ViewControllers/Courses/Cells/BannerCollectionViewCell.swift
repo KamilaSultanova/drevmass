@@ -39,7 +39,7 @@ class BannerCollectionViewCell: UICollectionViewCell {
         label.font = .appFont(ofSize: 15, weight: .regular)
         label.textColor = UIColor(red: 0.47, green: 0.47, blue: 0.47, alpha: 1)
         label.textAlignment = .left
-        label.numberOfLines = 2
+        label.numberOfLines = 0
         
         return label
     }()

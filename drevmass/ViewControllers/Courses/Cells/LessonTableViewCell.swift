@@ -7,10 +7,15 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import Alamofire
 
 class LessonTableViewCell: UITableViewCell {
     
     // MARK: - UI Elements
+    
+    weak var delegateCourseDetailVC: CourseDetailViewController?
+    
+    var lessonID: Int?
     
     private lazy var backgroundview: UIView = {
         let view = UIView()
@@ -44,6 +49,7 @@ class LessonTableViewCell: UITableViewCell {
         let button = UIButton()
         
         button.setImage(.CourseButton.bookmarkWhite, for: .normal)
+        button.addTarget(self, action: #selector(addToFavorite), for: .touchUpInside)
         
         return button
     }()
@@ -92,6 +98,7 @@ class LessonTableViewCell: UITableViewCell {
     }
     
     func setData(lesson: LessonProtocol, row: Int) {
+        self.lessonID = lesson.id
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(lesson.image)"))
         titleLabel.text = lesson.title
         let fullText = "\(row) урок · \(Int(floor(Double(lesson.duration) / 60.0))) мин"
@@ -121,7 +128,7 @@ class LessonTableViewCell: UITableViewCell {
         }
     }
 
-private extension LessonTableViewCell {
+extension LessonTableViewCell {
     func setupViews() {
         contentView.addSubview(backgroundview)
         backgroundview.addSubviews(imageview, playButton, durationLabel, titleLabel, bookmarkButton, checkImageView)
@@ -177,4 +184,43 @@ private extension LessonTableViewCell {
         }
         layoutIfNeeded()
     }
+    
+    @objc
+    func addToFavorite(){
+        var method = HTTPMethod.post
+        var url = Endpoints.favorites.value
+
+        if let lessonID = self.lessonID {
+            if var lesson = delegateCourseDetailVC?.lessonsArray.first(where: { $0.id == lessonID }) {
+                method = lesson.isFavorite ? .delete : .post
+                url = lesson.isFavorite ? "http://185.100.67.103/api/favorites/\(lessonID)" : Endpoints.favorites.value
+
+                let headers: HTTPHeaders = [
+                    .authorization(bearerToken: "\(AuthService.shared.token)")
+                ]
+
+                AF.upload(multipartFormData: { multipartFormData in
+                    if let textData = "\(lessonID)".data(using: .utf8) {
+                            multipartFormData.append(textData, withName: "lesson_id")
+                        }
+                    },
+                to: url,
+                method: method,
+                headers: headers
+                ).validate(statusCode: 200..<300).responseData {
+                    response in
+                    switch response.result {
+                    case .success:
+                        lesson.isFavorite.toggle()
+                        self.bookmarkButton.setImage(lesson.isFavorite ? UIImage.CourseButton.bookmarkFilled : UIImage.CourseButton.bookmarkWhite, for: .normal)
+                            self.delegateCourseDetailVC?.updateLessons()
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                        self.inputViewController?.showToast(type: .error, title: error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+
 }

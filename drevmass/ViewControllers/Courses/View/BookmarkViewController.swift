@@ -109,7 +109,7 @@ class BookmarkViewController: UIViewController {
     }
 }
 
-private extension BookmarkViewController {
+extension BookmarkViewController {
     func setupViews() {
         navigationController?.navigationBar.barTintColor = .white
         navigationController?.navigationBar.topItem?.title = " "
@@ -168,6 +168,11 @@ private extension BookmarkViewController {
                 self.showToast(type: .error, title: error.localizedDescription)
             }
         }
+    }
+    
+    func updateData(){
+        
+        fetchFavorites()
     }
 }
 

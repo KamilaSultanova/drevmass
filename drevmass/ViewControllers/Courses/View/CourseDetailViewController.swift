@@ -339,7 +339,6 @@ class CourseDetailViewController: UIViewController {
         view.backgroundColor = .appBackground
         setupViews()
         setupConstraints()
-        fetchCourseDetail()
         navigationItem.rightBarButtonItem = shareButton
     }
 
@@ -348,6 +347,7 @@ class CourseDetailViewController: UIViewController {
         navigationController?.navigationBar.topItem?.title = " "
         navigationController?.navigationBar.tintColor = .white
         configureViews()
+        fetchCourseDetail()
     }
     
 }
@@ -364,6 +364,7 @@ extension CourseDetailViewController {
         ]).responseDecodable(of: CourseDetail.self) { [self] response in
             switch response.result {
             case .success(let detailedCourse):
+                
                 if let bonus = detailedCourse.course?.bonus_info {
                     bonusLabel.text = " +\(bonus.price)"
                     bannerLabel.text = "Начислим \(bonus.price) бонусов за прохождение курса"
@@ -379,22 +380,32 @@ extension CourseDetailViewController {
                     
                     descriptionLabel.attributedText = attributedText
                 }
+                
+                var viewedLessonCount = 0
+                
                 if let lessons = detailedCourse.course?.lessons {
-                    lessonsArray = lessons
-                    for lesson in lessons {
-                        if lesson.completed == true {
-                            startLesson()
-                            viewedLesson += 1
-                            progressBar.setProgress(Float(viewedLesson) / Float(lessonsArray.count), animated: false)
-                            progressLabel.text = "\(viewedLesson) из \(lessonsArray.count)"
-                            if viewedLesson == lessonsArray.count {
-                                courseCompleted()
-                            }
-                        }
-                    }
-                } else {
-                    print("Lessons array is nil.")
-                }
+                       lessonsArray = lessons
+                       
+            
+                   for lesson in lessons {
+                       if lesson.completed == true {
+                           startLesson()
+                           viewedLessonCount += 1
+                           }
+                       }
+                   } else {
+                       print("Lessons array is nil.")
+                   }
+                           
+                   // Устанавливаем прогресс
+                   let progress = Float(viewedLessonCount) / Float(lessonsArray.count)
+                   progressBar.setProgress(progress, animated: false)
+                   progressLabel.text = "\(viewedLessonCount) из \(lessonsArray.count)"
+                   
+                   // Проверяем, завершены ли все уроки
+                   if viewedLessonCount == lessonsArray.count {
+                       courseCompleted()
+                   }
             case .failure(let error):
                 print("\(error.localizedDescription)")
                 print(String(data: response.data ?? Data(), encoding: .utf8))
@@ -598,7 +609,7 @@ extension CourseDetailViewController: UITableViewDelegate, UITableViewDataSource
             let lesson = lessonsArray[indexPath.row]
             cell.setData(lesson: lesson, row: indexPath.row + 1)
             cell.selectionStyle = .none
-        
+            cell.delegateCourseDetailVC = self
             return cell
     }
     
@@ -694,6 +705,11 @@ extension CourseDetailViewController {
         let alertVC = AlertViewController(course: course)
         alertVC.modalPresentationStyle = .overFullScreen
         present(alertVC, animated: true)
+    }
+    
+    func updateLessons(){
+        fetchCourseDetail()
+        configureViews()
     }
 }
 

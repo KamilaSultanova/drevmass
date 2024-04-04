@@ -10,9 +10,15 @@ import Alamofire
 
 class BookmarkTableViewCell: UITableViewCell {
     
-    weak var delegate: LessonCellProtocol?
+    weak var delegate: BookmarkViewController?
     
-    var lessonsArray: [Favorite.Lesson] = []
+    var lessonsArray: [Favorite.Lesson] = [] {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
+    weak var delegateBookmarkVC: LessonCellProtocol?
     
     // MARK: - UI Elements
     
@@ -49,7 +55,6 @@ class BookmarkTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
-        fetchFavoriteLesson()
     }
     
     required init?(coder: NSCoder) {
@@ -57,8 +62,10 @@ class BookmarkTableViewCell: UITableViewCell {
     
     func setData(course: Favorite) {
         titleLabel.text = course.course_name
-        
+        lessonsArray = course.lessons
+
     }
+    
     func setupViews() {
         contentView.addSubviews(titleLabel, collectionView)
         
@@ -73,21 +80,8 @@ class BookmarkTableViewCell: UITableViewCell {
         }
     }
     
-    func fetchFavoriteLesson() {
-        
-        AF.request(Endpoints.favorites.value, method: .get, headers: [.authorization(bearerToken: AuthService.shared.token)]).responseDecodable(of: [Favorite].self) { [self] response in
-            switch response.result {
-            case .success(let favoritesArray):
-                for array in favoritesArray{
-                    lessonsArray = array.lessons
-                }
-                collectionView.reloadData()
-                print(favoritesArray)
-            case .failure(let error):
-                print(error.localizedDescription)
-                self.inputViewController?.showToast(type: .error, title: error.localizedDescription)
-            }
-        }
+    func setDelegateForCells(_ cell: MarkedLessonCollectionViewCell) {
+        cell.delegateBookmarkVC = delegate
     }
 }
 extension BookmarkTableViewCell: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -102,7 +96,7 @@ extension BookmarkTableViewCell: UICollectionViewDelegate, UICollectionViewDataS
         }
         
         cell.setData(lesson: lessonsArray[indexPath.row])
-        
+        setDelegateForCells(cell)
         return cell
     }
     
