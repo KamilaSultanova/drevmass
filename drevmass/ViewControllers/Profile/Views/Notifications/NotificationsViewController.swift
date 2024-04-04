@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import UserNotifications
 
 class NotificationsViewController: UIViewController {
     
@@ -25,7 +26,7 @@ class NotificationsViewController: UIViewController {
     private lazy var notificationSwitch: UISwitch = {
         let switchNotification = UISwitch()
         switchNotification.onTintColor = .appBeige100
-//        switchNotification.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
+        switchNotification.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         
         return switchNotification
     }()
@@ -76,5 +77,32 @@ class NotificationsViewController: UIViewController {
             make.horizontalEdges.equalToSuperview().inset(16)
         }
     }
+    
+    @objc private func switchChanged() {
+            if notificationSwitch.isOn {
+                // Пользователь включил уведомления
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    if granted {
+                        DispatchQueue.main.async {
+                            self.showToast(type: .success, title: "Уведомления включены")
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.showToast(type: .success, title: "Уведомления выключены")
+                        }
+                    }
+                }
+            } else {
+                // Пользователь выключил уведомления
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    if settings.authorizationStatus == .authorized {
+                        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                        DispatchQueue.main.async {
+                            self.showToast(type: .success, title: "Уведомления отключены")
+                        }
+                    }
+                }
+            }
+        }
 
 }

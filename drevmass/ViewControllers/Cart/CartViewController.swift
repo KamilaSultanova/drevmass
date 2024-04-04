@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Alamofire
 import SwiftyJSON
+import Reachability
 
 protocol CartDelegate: AnyObject{
 }
@@ -314,6 +315,19 @@ class CartViewController: UIViewController, UIScrollViewDelegate {
         super.viewWillAppear(animated)
         self.title = "Корзина"
         fetchCart()
+        
+        guard let reachability = try? Reachability() else {
+            print("Unable to create Reachability object")
+            return
+        }
+        
+        if reachability.isReachable {
+            fetchCart()
+           
+        } else {
+            selectedProductArray.isEmpty
+            configureViews()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {

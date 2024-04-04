@@ -2,6 +2,7 @@ PODS:
   - Alamofire (5.9.0)
   - KeychainSwift (20.0.0)
   - PanModal (1.2.7)
+  - ReachabilitySwift (5.2.1)
   - SDWebImage (5.19.0):
     - SDWebImage/Core (= 5.19.0)
   - SDWebImage/Core (5.19.0)
@@ -15,6 +16,7 @@ DEPENDENCIES:
   - Alamofire (~> 5.0)
   - KeychainSwift (~> 20)
   - PanModal (~> 1)
+  - ReachabilitySwift
   - SDWebImage (~> 5.0)
   - SGSegmentedProgressBarLibrary
   - SnapKit (~> 5)
@@ -27,6 +29,7 @@ SPEC REPOS:
     - Alamofire
     - KeychainSwift
     - PanModal
+    - ReachabilitySwift
     - SDWebImage
     - SGSegmentedProgressBarLibrary
     - SnapKit
@@ -38,6 +41,7 @@ SPEC CHECKSUMS:
   Alamofire: 02b772c9910e8eba1a079227c32fbd9e46c90a24
   KeychainSwift: 0ce6a4d13f7228054d1a71bb1b500448fb2ab837
   PanModal: 3e16ead1a907fb06f4df3f13492fd00149fa4974
+  ReachabilitySwift: 5ae15e16814b5f9ef568963fb2c87aeb49158c66
   SDWebImage: 981fd7e860af070920f249fd092420006014c3eb
   SGSegmentedProgressBarLibrary: 2b7f2dc518cd19c5d7d42ae6a8e9ec5610c334f1
   SnapKit: d612e99e678a2d3b95bf60b0705ed0a35c03484a
@@ -45,6 +49,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 2f33a42c6fbc52764d96f13368585094bfd8aa5e
   youtube-ios-player-helper: e9b97535e816db3152179d84d999bc1807ecd689
 
-PODFILE CHECKSUM: 3a8e61f4bd75c4a2049ddf3ef7799fc82d103cb6
+PODFILE CHECKSUM: 62f20519f6b26938c379e8a406f0f0289c371eb0
 
 COCOAPODS: 1.12.1

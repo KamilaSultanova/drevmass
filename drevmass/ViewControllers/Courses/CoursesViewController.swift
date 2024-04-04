@@ -7,6 +7,7 @@
 import UIKit
 import SnapKit
 import Alamofire
+import Reachability
 
 class CoursesViewController: UIViewController {
     
@@ -24,6 +25,7 @@ class CoursesViewController: UIViewController {
             subtitle: "Начислим до 1500 ₽ \nбонусами."
         )
 	]
+    
     
     // MARK: - UI Elements
     
@@ -129,6 +131,45 @@ class CoursesViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var noInternetView: UIView = {
+        let view = UIView()
+        
+        return view
+    }()
+    
+    private lazy var wifiImageView: UIImageView = {
+        let imageview = UIImageView()
+        
+        imageview.image = .Toast.wifi
+        imageview.contentMode = .scaleAspectFit
+        
+        return imageview
+    }()
+    
+    private lazy var internetLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Не удалось загрузить"
+        label.textAlignment = .center
+        label.font = .appFont(ofSize: 17, weight: .semiBold)
+        label.textColor = .appDark100
+        
+        return label
+    }()
+    
+    private lazy var reloadButton: UIButton = {
+        let button = UIButton()
+        
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = .appFont(ofSize: 15, weight: .semiBold)
+        button.setTitle("Повторить попытку", for: .normal)
+        button.backgroundColor = .appBeige100
+        button.addTarget(self, action: #selector(reloadTapped), for: .touchUpInside)
+        button.layer.cornerRadius = 25
+        button.clipsToBounds = true
+        
+        return button
+    }()
+    
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -139,6 +180,23 @@ class CoursesViewController: UIViewController {
         hideBookmarkButton()
 		fetchCourses()
         
+        guard let reachability = try? Reachability() else {
+            print("Unable to create Reachability object")
+            return
+        }
+        
+        if reachability.isReachable {
+            noInternetView.isHidden = true
+            fetchCourses()
+            bookmarkView.isHidden = false
+            tableView.isHidden = false
+            collectionView.isHidden = false
+        } else {
+            noInternetView.isHidden = false
+            bookmarkView.isHidden = true
+            tableView.isHidden = true
+            collectionView.isHidden = true
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -151,10 +209,11 @@ private extension CoursesViewController {
     func setupViews() {
         navigationController?.navigationBar.barTintColor = .white
         view.backgroundColor = .appBackground
-        view.addSubview(scrollView)
+        view.addSubviews(scrollView, noInternetView)
         scrollView.addSubview(contentView)
         contentView.addSubviews(bookmarkView, tableView, collectionView)
         bookmarkView.addSubviews(leftBookmarkImageView, rightBookmarkImageView, bookmarkLabel)
+        noInternetView.addSubviews(wifiImageView, internetLabel, reloadButton)
     }
     
     func setupConstraints() {
@@ -168,6 +227,26 @@ private extension CoursesViewController {
             make.top.equalTo(scrollView.contentLayoutGuide).inset(16)
             make.width.equalTo(scrollView.frameLayoutGuide)
             make.height.greaterThanOrEqualTo(scrollView.frameLayoutGuide)
+        }
+        
+        noInternetView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        wifiImageView.snp.makeConstraints { make in
+            make.size.equalTo(112)
+            make.center.equalToSuperview()
+        }
+        
+        internetLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(wifiImageView.snp.bottom).offset(24)
+        }
+        
+        reloadButton.snp.makeConstraints { make in
+            make.top.equalTo(internetLabel.snp.bottom).offset(24)
+            make.height.equalTo(48)
+            make.horizontalEdges.equalToSuperview().inset(84)
         }
         
         bookmarkView.snp.makeConstraints { make in
@@ -306,4 +385,9 @@ extension CoursesViewController {
     private func hideBookmarkButton() {
            navigationItem.rightBarButtonItem = nil
        }
+    
+    @objc func reloadTapped() {
+        fetchCourses()
+    }
+
 }

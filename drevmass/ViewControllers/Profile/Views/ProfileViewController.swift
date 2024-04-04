@@ -9,6 +9,7 @@ import SnapKit
 import Alamofire
 import KeychainSwift
 import SwiftyJSON
+import Reachability
 
 
 class ProfileViewController: UIViewController, UIScrollViewDelegate {
@@ -112,7 +113,6 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
     
     private lazy var bonusLabel: UILabel = {
         let label = UILabel()
-        label.text = "500"
         label.font = .appFont(ofSize: 28, weight: .bold)
         label.textColor = .white
         label.isUserInteractionEnabled = true
@@ -177,7 +177,7 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
     private lazy var feedbackButton: CustomButton = {
         let button = CustomButton()
         button.addTwoImagesButton(leftImage: .star, rightImage: .CourseButton.arrow, title: "Оставить отзыв")
-//        button.addTarget(self, action: #selector(tapBonus), for: .touchUpInside)
+//        button.addTarget(self, action: #selector(feedbackTapped), for: .touchUpInside)
 
         return button
     }()
@@ -216,8 +216,19 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
         view.backgroundColor = .appBackground
         setupUI()
         setupConstraints()
-        fetchUserInfo()
-        fetchBonus()
+        
+        guard let reachability = try? Reachability() else {
+            print("Unable to create Reachability object")
+            return
+        }
+        
+        if reachability.isReachable {
+            fetchUserInfo()
+            fetchBonus()
+           
+        } else {
+            scrollView.isUserInteractionEnabled = false
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {

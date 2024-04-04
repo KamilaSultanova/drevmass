@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Alamofire
 import SwiftyJSON
+import Reachability
 
 
 class CatalogViewController: UIViewController, UIScrollViewDelegate {
@@ -110,6 +111,46 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         tableView.register(ListTableViewCell.self, forCellReuseIdentifier: "ListCell")
         return tableView
     }()
+    
+    private lazy var noInternetView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .white
+        
+        return view
+    }()
+    
+    private lazy var wifiImageView: UIImageView = {
+        let imageview = UIImageView()
+        
+        imageview.image = .Toast.wifi
+        imageview.contentMode = .scaleAspectFit
+        
+        return imageview
+    }()
+    
+    private lazy var internetLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Не удалось загрузить"
+        label.textAlignment = .center
+        label.font = .appFont(ofSize: 17, weight: .semiBold)
+        label.textColor = .appDark100
+        
+        return label
+    }()
+    
+    private lazy var reloadButton: UIButton = {
+        let button = UIButton()
+        
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = .appFont(ofSize: 15, weight: .semiBold)
+        button.setTitle("Повторить попытку", for: .normal)
+        button.backgroundColor = .appBeige100
+        button.addTarget(self, action: #selector(reloadTapped), for: .touchUpInside)
+        button.layer.cornerRadius = 25
+        button.clipsToBounds = true
+        
+        return button
+    }()
 
     // MARK: - Lifecycle
 
@@ -129,15 +170,30 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         setupUI()
         setupConstraints()
         fetchProducts()
-        configureViews()
+        
+        guard let reachability = try? Reachability() else {
+            print("Unable to create Reachability object")
+            return
+        }
+        
+        if reachability.isReachable {
+            noInternetView.isHidden = true
+            fetchProducts()
+            configureViews()
+        } else {
+            noInternetView.isHidden = false
+            tableView.isHidden = true
+            collectionView.isHidden = true
+        }
     }
 }
 extension CatalogViewController {
     private func setupUI() {
         
-        view.addSubview(scrollView )
+        view.addSubviews(scrollView, noInternetView)
         scrollView.addSubview(contentView)
         contentView.addSubviews(sortingButton, layoutButton, collectionView, tableView)
+        noInternetView.addSubviews(wifiImageView, internetLabel, reloadButton)
         
     }
     
@@ -145,6 +201,26 @@ extension CatalogViewController {
         scrollView.snp.makeConstraints { make in
             make.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
             make.bottom.equalToSuperview()
+        }
+        
+        noInternetView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+        
+        wifiImageView.snp.makeConstraints { make in
+            make.size.equalTo(112)
+            make.center.equalToSuperview()
+        }
+        
+        internetLabel.snp.makeConstraints { make in
+            make.horizontalEdges.equalToSuperview().inset(16)
+            make.top.equalTo(wifiImageView.snp.bottom).offset(24)
+        }
+        
+        reloadButton.snp.makeConstraints { make in
+            make.top.equalTo(internetLabel.snp.bottom).offset(24)
+            make.height.equalTo(48)
+            make.horizontalEdges.equalToSuperview().inset(84)
         }
 
         contentView.snp.makeConstraints { make in
@@ -200,6 +276,11 @@ extension CatalogViewController: SortingViewControllerDelegate{
             .font: UIFont.appFont(ofSize: 15, weight: .semiBold),
             .foregroundColor: UIColor.appDark90
         ]), for: .normal)
+        fetchProducts()
+    }
+    
+    @objc
+    func reloadTapped(){
         fetchProducts()
     }
     

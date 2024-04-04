@@ -745,6 +745,13 @@ extension CourseDetailViewController: CalendarViewDelegate {
 
     func calendarViewSwitchChanged(isOn: Bool) {
         if isOn {
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                if granted {
+                    DispatchQueue.main.async {
+                        self.showToast(type: .success, title: "Настройки успешно сохранены")
+                    }
+                }
+            }
             calendarView.snp.remakeConstraints { make in
                 if bannerImageView.isHidden == true {
                     make.top.equalTo(descriptionLabel.snp.bottom).offset(24)
@@ -753,6 +760,15 @@ extension CourseDetailViewController: CalendarViewDelegate {
                 make.horizontalEdges.equalToSuperview().inset(16)
                 make.height.equalTo(163)}
         } else {
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                if settings.authorizationStatus == .authorized {
+                    UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+                    DispatchQueue.main.async {
+                        self.showToast(type: .success, title: "Настройки успешно сохранены")
+                    }
+                }
+            }
+        
             calendarView.snp.remakeConstraints { make in
                 if bannerImageView.isHidden == true {
                     make.top.equalTo(descriptionLabel.snp.bottom).offset(24)

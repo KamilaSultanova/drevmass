@@ -293,6 +293,7 @@ private extension MyBonusViewController {
         tableView.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(historyLabel.snp.bottom).offset(4)
+            make.bottom.equalToSuperview()
         }
         
     }

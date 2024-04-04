@@ -15,6 +15,7 @@ target 'drevmass' do
 	pod 'PanModal', '~> 1'
   pod 'youtube-ios-player-helper'
   pod 'SGSegmentedProgressBarLibrary'
+  pod 'ReachabilitySwift' 
 
   target 'drevmassTests' do
     inherit! :search_paths

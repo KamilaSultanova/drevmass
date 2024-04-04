@@ -321,9 +321,14 @@ private extension PromocodeViewController {
     }
     
     func configureViews(){
-        promocodeImageView.isHidden = true
-        noPromocodeLabel.isHidden = true
-        instructionsLabel.isHidden = true
+        if promocodeLabel.text == nil{
+            promocodeView.isHidden = true
+            shareView.isHidden = true
+        }else{
+            promocodeImageView.isHidden = true
+            noPromocodeLabel.isHidden = true
+            instructionsLabel.isHidden = true
+        }
     }
 }
 
@@ -384,10 +389,10 @@ private extension PromocodeViewController{
                 descriptionLabel.text = "Промокод \(promocode.bonus) бонусов на покупку массажера для двух друзей!*"
                 if promocode.used == promocode.allAtempt{
                     lineImageView.tintColor = .white.withAlphaComponent(0.6)
-                    promocodeLabel.tintColor = .white.withAlphaComponent(0.6)
-                    shareButton.tintColor = .white.withAlphaComponent(0.6)
+                    promocodeLabel.textColor = .white.withAlphaComponent(0.6)
+                    shareButton.setTitleColor(.white.withAlphaComponent(0.6), for: .normal)
                     shareButton.isEnabled = false
-                    copyButton.tintColor = .white.withAlphaComponent(0.6)
+                    copyButton.setTitleColor(.white.withAlphaComponent(0.6), for: .normal) 
                     copyButton.isEnabled = false
                 }
             case .failure(let error):
