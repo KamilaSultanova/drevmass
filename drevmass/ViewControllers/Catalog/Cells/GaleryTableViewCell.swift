@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Alamofire
+import SkeletonView
 
 class GaleryTableViewCell: UITableViewCell {
     
@@ -50,13 +51,16 @@ class GaleryTableViewCell: UITableViewCell {
     
     private lazy var cartButton: UIButton = {
         let button = UIButton()
-        button.setImage(.CartButton.normal, for: .normal)
         button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         
         return button
     }()
     
     private var isAddedToCart: Bool = false
+    
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .appBeige40)
    
     // MARK: - Lifecycle
 
@@ -86,13 +90,14 @@ extension GaleryTableViewCell {
         priceLabel.snp.makeConstraints { make in
             make.top.equalTo(imageview.snp.bottom).offset(12)
             make.left.equalToSuperview().inset(16)
-            make.right.equalTo(cartButton.snp.left)
+            make.right.equalTo(cartButton.snp.left).offset(-16)
         }
         
         productLabel.snp.makeConstraints { make in
             make.top.equalTo(priceLabel.snp.bottom).offset(4)
-            make.horizontalEdges.equalTo(priceLabel)
-            make.bottom.equalToSuperview().inset(8)
+            make.left.equalTo(priceLabel)
+            make.right.equalTo(cartButton.snp.left).offset(-16)
+            make.bottom.equalToSuperview().inset(12)
         }
         
         cartButton.snp.makeConstraints { make in
@@ -106,8 +111,23 @@ extension GaleryTableViewCell {
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(product.imageUrl)"))
         priceLabel.text = "\(product.price.formattedString()) ₽"
         productLabel.text = product.name
+        cartButton.setImage(.CartButton.normal, for: .normal)
         
         fetchInStock()
+    }
+    
+    func configureCellSkeleton(){
+        imageview.isSkeletonable = true
+        priceLabel.isSkeletonable = true
+        productLabel.isSkeletonable = true
+        cartButton.isSkeletonable = true
+        priceLabel.linesCornerRadius = 4
+        productLabel.linesCornerRadius = 4
+        cartButton.skeletonCornerRadius = 24
+        imageview.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        priceLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        productLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        cartButton.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
     }
 }
 

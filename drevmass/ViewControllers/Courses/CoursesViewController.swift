@@ -8,12 +8,13 @@ import UIKit
 import SnapKit
 import Alamofire
 import Reachability
+import SkeletonView
 
 class CoursesViewController: UIViewController {
     
     // MARK: - Properties
 
-	var coursesArray: [Course] = [] {
+    var coursesArray: [Course] = []{
 		didSet {
 			tableView.reloadData()
 		}
@@ -24,7 +25,11 @@ class CoursesViewController: UIViewController {
             title: "Получайте бонусы за прохождение курсов",
             subtitle: "Начислим до 1500 ₽ \nбонусами."
         )
-	]
+    ]{
+        didSet{
+            collectionView.reloadData()
+        }
+    }
     
     
     // MARK: - UI Elements
@@ -78,7 +83,8 @@ class CoursesViewController: UIViewController {
         
         imageView.image = .CourseButton.bookmark
         imageView.contentMode = .scaleAspectFit
-        
+        imageView.isSkeletonable = true
+        imageView.skeletonCornerRadius = 12
         return imageView
     }()
     
@@ -88,6 +94,8 @@ class CoursesViewController: UIViewController {
         label.textAlignment = .left
         label.font = .appFont(ofSize: 17, weight: .semiBold)
         label.textColor = .appDark100
+        label.isSkeletonable = true
+        label.linesCornerRadius = 4
         
         return label
     }()
@@ -115,6 +123,7 @@ class CoursesViewController: UIViewController {
         collectionView.isScrollEnabled = true
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(BannerCollectionViewCell.self, forCellWithReuseIdentifier: "BannerCell")
+        collectionView.isSkeletonable = true
 
         return collectionView
     }()
@@ -127,6 +136,7 @@ class CoursesViewController: UIViewController {
         tableView.isScrollEnabled = false
         tableView.separatorStyle = .none
         tableView.register(CourseTableViewCell.self, forCellReuseIdentifier: "CourseCell")
+        tableView.isSkeletonable = true
 
         return tableView
     }()
@@ -170,6 +180,12 @@ class CoursesViewController: UIViewController {
         return button
     }()
     
+    var isLoadingData: Bool = false
+    
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .appBeige40)
+    
     // MARK: - Lifecycle
 
     override func viewDidLoad() {
@@ -178,30 +194,28 @@ class CoursesViewController: UIViewController {
         setupConstraints()
         navigationItem.rightBarButtonItem = bookmarkButton
         hideBookmarkButton()
-		fetchCourses()
-        
-        guard let reachability = try? Reachability() else {
-            print("Unable to create Reachability object")
-            return
-        }
-        
-        if reachability.isReachable {
-            noInternetView.isHidden = true
-            fetchCourses()
-            bookmarkView.isHidden = false
-            tableView.isHidden = false
-            collectionView.isHidden = false
-        } else {
-            noInternetView.isHidden = false
-            bookmarkView.isHidden = true
-            tableView.isHidden = true
-            collectionView.isHidden = true
-        }
+        checkNetworkStatus()
+        fetchCourses()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         title = "Курсы"
+    }
+    
+    
+    func showSkeleton() {
+        bookmarkLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        leftBookmarkImageView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        tableView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        collectionView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+    }
+    
+    func hideAllSkeleton() {
+        bookmarkLabel.hideSkeleton()
+        leftBookmarkImageView.hideSkeleton()
+        tableView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
+        collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
     }
 }
 
@@ -287,12 +301,18 @@ private extension CoursesViewController {
     }
 	
 	func fetchCourses() {
+
+        isLoadingData = true
+        showSkeleton()
+        
 		AF.request(Endpoints.courses.value, method: .get, headers: [
 			.authorization(bearerToken: AuthService.shared.token)
 		]).responseDecodable(of: [Course].self) { response in
 			switch response.result {
 				case .success(let courses):
-					self.coursesArray = courses
+                self.coursesArray = courses
+                self.hideAllSkeleton()
+                self.isLoadingData = false
 				case .failure(let error):
                     print("error")
 					self.showToast(type: .error, title: error.localizedDescription)
@@ -304,6 +324,7 @@ private extension CoursesViewController {
 // MARK: - UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout
 
 extension CoursesViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return bannersArray.count
     }
@@ -313,7 +334,6 @@ extension CoursesViewController: UICollectionViewDelegate, UICollectionViewDataS
         else {
             fatalError("Unable to find a cell with identifier \"BannerCell\"")
         }
-        
         cell.setData(banner: bannersArray[indexPath.row])
         
         return cell
@@ -324,7 +344,11 @@ extension CoursesViewController: UICollectionViewDelegate, UICollectionViewDataS
         return CGSize(width: collectionView.bounds.width - 32, height: 124)
     }
 }
-
+    extension CoursesViewController: SkeletonCollectionViewDataSource{
+        func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> SkeletonView.ReusableCellIdentifier {
+            return "BannerCell"
+        }
+    }
 // MARK: - UITableViewDataSource, UITableViewDelegate
 
 extension CoursesViewController: UITableViewDelegate, UITableViewDataSource {
@@ -332,14 +356,19 @@ extension CoursesViewController: UITableViewDelegate, UITableViewDataSource {
         return coursesArray.count
     }
     
+   
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "CourseCell", for: indexPath) as? CourseTableViewCell else {
             fatalError("Unable to find a cell with identifier \"CourseCell\"")
         }
-        
-        cell.setData(course: coursesArray[indexPath.row])
+        cell.isSkeletonable = true
+        if !isLoadingData && !coursesArray.isEmpty {
+            cell.setData(course: coursesArray[indexPath.row])
+        }else{
+            cell.configureSkeleton()
+        }
+    
         cell.selectionStyle = .none
-        
         return cell
     }
     
@@ -350,8 +379,10 @@ extension CoursesViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedCourse = coursesArray[indexPath.row]
         let DetailViewController = CourseDetailViewController(course: selectedCourse)
-        
         navigationController?.show(DetailViewController, sender: self)
+    }
+    func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        return "CourseCell"
     }
 }
 
@@ -389,5 +420,24 @@ extension CoursesViewController {
     @objc func reloadTapped() {
         fetchCourses()
     }
+    
+    private func checkNetworkStatus() {
+        guard let reachability = try? Reachability() else {
+            print("Unable to create Reachability object")
+            return
+        }
 
+        if reachability.isReachable {
+            noInternetView.isHidden = true
+            fetchCourses()
+            bookmarkView.isHidden = false
+            tableView.isHidden = false
+            collectionView.isHidden = false
+        } else {
+            noInternetView.isHidden = false
+            bookmarkView.isHidden = true
+            tableView.isHidden = true
+            collectionView.isHidden = true
+        }
+    }
 }

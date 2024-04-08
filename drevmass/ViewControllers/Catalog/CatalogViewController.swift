@@ -10,6 +10,7 @@ import SnapKit
 import Alamofire
 import SwiftyJSON
 import Reachability
+import SkeletonView
 
 
 class CatalogViewController: UIViewController, UIScrollViewDelegate {
@@ -109,6 +110,8 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         tableView.isScrollEnabled = false
         tableView.register(GaleryTableViewCell.self, forCellReuseIdentifier: "GalleryCell")
         tableView.register(ListTableViewCell.self, forCellReuseIdentifier: "ListCell")
+        tableView.isSkeletonable = true
+        
         return tableView
     }()
     
@@ -151,6 +154,8 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         
         return button
     }()
+    
+    var isLoadingData: Bool = false
 
     // MARK: - Lifecycle
 
@@ -169,7 +174,6 @@ class CatalogViewController: UIViewController, UIScrollViewDelegate {
         navigationController?.navigationBar.tintColor = .appBeige100
         setupUI()
         setupConstraints()
-        fetchProducts()
         
         guard let reachability = try? Reachability() else {
             print("Unable to create Reachability object")
@@ -311,13 +315,21 @@ extension CatalogViewController: SortingViewControllerDelegate{
 }
 
 extension CatalogViewController {
+
     func fetchProducts(){
+        isLoadingData = true
+        tableView.showAnimatedGradientSkeleton()
+        collectionView.showAnimatedGradientSkeleton()
+   
         AF.request(Endpoints.product(sortType: currentSortingType).value, method: .get,  headers: [.authorization(bearerToken: AuthService.shared.token)]).responseDecodable(of: [Product].self){ response in
             switch response.result{
             case .success(let products):
                 self.productArray = products
                 self.collectionView.reloadData()
                 self.tableView.reloadData()
+                self.tableView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
+                self.collectionView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
+                self.isLoadingData = false
             case .failure(let error):
                 self.showToast(type: .error)
                 print(error)
@@ -335,8 +347,12 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ProductPlateCell", for: indexPath) as? ProductPlateCell else {
             fatalError("Unable to find a cell with identifier \(ProductPlateCell.self)!")
         }
-        cell.setdata(product: productArray[indexPath.row])
-        cell.productId = productArray[indexPath.row].id
+        if !isLoadingData && !productArray.isEmpty {
+            cell.setdata(product: productArray[indexPath.row])
+            cell.productId = productArray[indexPath.row].id
+        }else{
+            cell.configureCellSkeleton()
+        }
         cell.delegateCatalogVC = self
         
         return cell
@@ -353,10 +369,16 @@ extension CatalogViewController: UICollectionViewDelegate, UICollectionViewDataS
         let productDetailVC = ProductViewController(product: productArray[indexPath.row])
         navigationController?.pushViewController(productDetailVC, animated: true)
     }
-
+}
+extension CatalogViewController: SkeletonCollectionViewDataSource{
+    func collectionSkeletonView(_ skeletonView: UICollectionView, cellIdentifierForItemAt indexPath: IndexPath) -> SkeletonView.ReusableCellIdentifier {
+        return "ProductPlateCell"
+    }
 }
 
-extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
+
+
+extension CatalogViewController: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return productArray.count
     }
@@ -365,9 +387,13 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
         
         if currentLayoutType == .gallery{
             let cell = tableView.dequeueReusableCell(withIdentifier: "GalleryCell", for: indexPath) as! GaleryTableViewCell
-//            cell.product = productArray[indexPath.row]
-            cell.setdata(product: productArray[indexPath.row])
-            cell.productId = productArray[indexPath.row].id
+            cell.isSkeletonable = true
+            if !isLoadingData && !productArray.isEmpty {
+                cell.setdata(product: productArray[indexPath.row])
+                cell.productId = productArray[indexPath.row].id
+            }else{
+                cell.configureCellSkeleton()
+            }
             cell.selectionStyle = .none
             cell.delegate = self
             
@@ -376,9 +402,13 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
         
         if currentLayoutType == .list{
             let cell = tableView.dequeueReusableCell(withIdentifier: "ListCell", for: indexPath) as! ListTableViewCell
-//            cell.product = productArray[indexPath.row]
-            cell.setdata(product: productArray[indexPath.row])
-            cell.productId = productArray[indexPath.row].id
+
+            if !isLoadingData && !productArray.isEmpty {
+                cell.setdata(product: productArray[indexPath.row])
+                cell.productId = productArray[indexPath.row].id
+            }else{
+                cell.configureCellSkeleton()
+            }
             cell.selectionStyle = .none
             cell.delegate = self
             
@@ -390,12 +420,18 @@ extension CatalogViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        if currentLayoutType == .list{
+            return 120
+        }
+        return 280
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let productDetailVC = ProductViewController(product: productArray[indexPath.row])
-        navigationController?.pushViewController(productDetailVC, animated: true)
+    func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        if currentLayoutType == .list{
+            return "ListCell"
+        }
+        return "GalleryCell"
+        
     }
 }
 

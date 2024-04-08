@@ -10,6 +10,7 @@ import Alamofire
 import KeychainSwift
 import SwiftyJSON
 import Reachability
+import SkeletonView
 
 
 class ProfileViewController: UIViewController, UIScrollViewDelegate {
@@ -116,6 +117,8 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
         label.font = .appFont(ofSize: 28, weight: .bold)
         label.textColor = .white
         label.isUserInteractionEnabled = true
+        label.isSkeletonable = true
+        label.linesCornerRadius = 6
         
         return label
     }()
@@ -209,6 +212,11 @@ class ProfileViewController: UIViewController, UIScrollViewDelegate {
 
         return button
     }()
+    
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .white.withAlphaComponent(0.4))
+    
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
@@ -420,12 +428,14 @@ private extension ProfileViewController {
     
     @objc
     func fetchBonus() {
+        bonusLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
         
         AF.request(Endpoints.bonus.value, method: .get, headers: [
             .authorization(bearerToken: AuthService.shared.token)
         ]).responseDecodable(of: Bonus.self) { response in
             switch response.result {
             case .success(let bonus):
+                self.bonusLabel.hideSkeleton()
                 self.bonusLabel.text = "\(bonus.bonus)"
             case .failure(let error):
                 print(error)

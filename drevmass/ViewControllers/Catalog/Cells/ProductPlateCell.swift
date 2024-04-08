@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import Alamofire
 import SwiftyJSON
+import SkeletonView
 
 protocol ProductPlateCellDelegate: AnyObject {
     func addToCartButtonTapped(productId: Int, tabBarController: UITabBarController?)
@@ -65,13 +66,17 @@ class ProductPlateCell: UICollectionViewCell {
     
     lazy var cartButton: UIButton = {
         let button = UIButton()
-        button.setImage(.CartButton.normal, for: .normal)
+//        button.setImage(.CartButton.normal, for: .normal)
         button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         
         return button
     }()
     
     private var isAddedToCart: Bool = false
+    
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .appBeige40)
     
     // MARK: - Lifecycle
     override init(frame: CGRect) {
@@ -119,8 +124,23 @@ extension ProductPlateCell {
         imageview.sd_setImage(with: URL(string: "http://45.12.74.158/\(product.imageUrl)"))
         priceLabel.text = "\(product.price.formattedString()) ₽"
         productLabel.text = product.name
+        cartButton.setImage(.CartButton.normal, for: .normal)
         
        fetchInStock()
+    }
+    
+    func configureCellSkeleton(){
+        imageview.isSkeletonable = true
+        priceLabel.isSkeletonable = true
+        productLabel.isSkeletonable = true
+        cartButton.isSkeletonable = true
+        priceLabel.linesCornerRadius = 4
+        productLabel.linesCornerRadius = 4
+        cartButton.skeletonCornerRadius = 18
+        imageview.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        priceLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        productLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        cartButton.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
     }
     
     @objc private func cartButtonTapped() {

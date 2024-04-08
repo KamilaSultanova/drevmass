@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import SkeletonView
 
 class BonusTableViewCell: UITableViewCell {
     
@@ -49,7 +50,6 @@ class BonusTableViewCell: UITableViewCell {
     
     private lazy var bonusIcon: UIImageView = {
         let image = UIImageView()
-        image.image = .Course.bonus
         image.contentMode = .scaleAspectFit
     
         return image
@@ -63,12 +63,17 @@ class BonusTableViewCell: UITableViewCell {
         return image
     }()
     
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .appBeige40)
+    
     // MARK: - Lifecycle
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
         setupConstraints()
+        self.isSkeletonable = true
     }
     
     required init?(coder: NSCoder) {
@@ -112,8 +117,23 @@ class BonusTableViewCell: UITableViewCell {
             make.height.equalTo(1)
         }
     }
+    func configureSkeleton(){
+        bonusTypeLabel.isSkeletonable = true
+        bonusTypeLabel.linesCornerRadius = 4
+        bonusTypeLabel.skeletonTextNumberOfLines = 1
+        bonusIcon.isSkeletonable = true
+        bonusIcon.skeletonCornerRadius = 4
+        dateLabel.isSkeletonable = true
+        dateLabel.linesCornerRadius = 4
+        
+        bonusTypeLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        bonusIcon.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        dateLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+      
+    }
     
     func setData(bonus: Bonus.Transactions) {
+        bonusIcon.image = .Course.bonus
         bonusTypeLabel.text = bonus.description
         plusOrMinusLabel.text = bonus.transactionType
         if bonus.transactionType == "-"{

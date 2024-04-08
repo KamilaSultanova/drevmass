@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Alamofire
+import SkeletonView
 
 class MyBonusViewController: UIViewController, UIScrollViewDelegate {
     
@@ -65,9 +66,10 @@ class MyBonusViewController: UIViewController, UIScrollViewDelegate {
     
     private lazy var bonusLabel: UILabel = {
         let label = UILabel()
-        label.text = "0"
         label.font = .appFont(ofSize: 34, weight: .bold)
         label.textColor = .white
+        label.isSkeletonable = true
+        label.linesCornerRadius = 8
         
         return label
     }()
@@ -83,6 +85,8 @@ class MyBonusViewController: UIViewController, UIScrollViewDelegate {
         label.text = "1 балл = 1 ₽"
         label.font = .appFont(ofSize: 15, weight: .semiBold)
         label.textColor = .white
+        label.isSkeletonable = true
+        label.linesCornerRadius = 4
      
         return label
     }()
@@ -114,9 +118,10 @@ class MyBonusViewController: UIViewController, UIScrollViewDelegate {
     
     private lazy var burningBonusLabel: UILabel = {
         let label = UILabel()
-        label.text = "300"
         label.font = .appFont(ofSize: 13, weight: .medium)
         label.textColor = .white
+        label.isSkeletonable = true
+        label.linesCornerRadius = 4
      
         return label
     }()
@@ -166,10 +171,16 @@ class MyBonusViewController: UIViewController, UIScrollViewDelegate {
         tableView.separatorStyle = .none
         tableView.register(BonusTableViewCell.self, forCellReuseIdentifier: "BonusCell")
         tableView.isUserInteractionEnabled = false
+        tableView.isSkeletonable = true
 
         return tableView
     }()
     
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .white.withAlphaComponent(0.4))
+    
+    var isLoadingData: Bool = false
     
     // MARK: - Lifecycle
 
@@ -334,27 +345,49 @@ extension MyBonusViewController: UITableViewDataSource, UITableViewDelegate {
             fatalError("Unable to find a cell with identifier \"BonusCell\"")
         }
         
-        cell.setData(bonus: bonusArray[indexPath.row])
+        if !isLoadingData && !bonusArray.isEmpty {
+            cell.setData(bonus: bonusArray[indexPath.row])
+        }else{
+            cell.configureSkeleton()
+        }
+        
         cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
+        return 70
     }
+    
+    func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
+        return "BonusCell"
+    }
+    
 }
+
 
 private extension MyBonusViewController {
     @objc
     func fetchBonus() {
+        isLoadingData = true
+        bonusLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        moneyLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        burningBonusLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        tableView.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
         
         AF.request(Endpoints.bonus.value, method: .get, headers: [
             .authorization(bearerToken: AuthService.shared.token)
         ]).responseDecodable(of: Bonus.self) { [self] response in
             switch response.result {
             case .success(let bonus):
+                bonusLabel.hideSkeleton()
+                moneyLabel.hideSkeleton()
+                burningBonusLabel.hideSkeleton()
+                
                 self.bonusLabel.text = "\(bonus.bonus)"
                 self.bonusArray = bonus.transactions
+                self.isLoadingData = false
+                self.tableView.hideSkeleton(reloadDataAfter: true, transition: .crossDissolve(0.25))
                 if let burningBonusArray = bonus.burning{
                     if burningBonusArray.isEmpty{
                         self.burningBonusView.isHidden = true

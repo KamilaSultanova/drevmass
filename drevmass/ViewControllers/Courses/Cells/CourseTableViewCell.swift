@@ -7,6 +7,7 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import SkeletonView
 
 class CourseTableViewCell: UITableViewCell {
 	
@@ -29,6 +30,7 @@ class CourseTableViewCell: UITableViewCell {
 		imageview.contentMode = .scaleAspectFill
 		imageview.layer.cornerRadius = 16
 		imageview.clipsToBounds = true
+        imageview.isSkeletonable = true
 		
 		return imageview
 	}()
@@ -40,6 +42,8 @@ class CourseTableViewCell: UITableViewCell {
 		label.textColor = .appDark100
 		label.textAlignment = .left
 		label.numberOfLines = 2
+        label.isSkeletonable = true
+        label.linesCornerRadius = 4
 		
 		return label
 	}()
@@ -49,6 +53,8 @@ class CourseTableViewCell: UITableViewCell {
 		
 		label.font = .appFont(ofSize: 13, weight: .semiBold)
 		label.textColor = .appGray70
+        label.isSkeletonable = true
+        label.linesCornerRadius = 4
 		
 		return label
 	}()
@@ -80,6 +86,10 @@ class CourseTableViewCell: UITableViewCell {
 		
 		return imageview
 	}()
+    
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .appBeige40)
 	
 	// MARK: - Lifecycle
 	
@@ -87,7 +97,8 @@ class CourseTableViewCell: UITableViewCell {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		setupViews()
 		setupConstraints()
-	}
+        self.isSkeletonable = true
+    }
 	
 	required init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
@@ -125,6 +136,7 @@ class CourseTableViewCell: UITableViewCell {
 			bonusView.isHidden = true
 		}
         bonusLabel.text = "+\(course.bonus.price)"
+        
 	}
 }
 
@@ -146,7 +158,7 @@ extension Int {
     }
 }
 
-private extension CourseTableViewCell {
+extension CourseTableViewCell {
 	func setupViews() {
 		contentView.addSubview(backgroundview)
 		backgroundview.addSubviews(imageview, lessonInfoLabel, titleLabel, bonusView)
@@ -195,4 +207,12 @@ private extension CourseTableViewCell {
 			make.right.equalToSuperview().inset(2)
 		}
 	}
+    
+   func configureSkeleton() {
+//        isSkeletonable = true
+        imageview.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        lessonInfoLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        titleLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        bonusView.isHidden = true
+    }
 }

@@ -8,6 +8,7 @@
 import UIKit
 import SnapKit
 import Alamofire
+import SkeletonView
 
 protocol ListTableViewCellDelegate: AnyObject {
     func decreasedNumberOfproducts(countId: Int)
@@ -62,7 +63,7 @@ class ListTableViewCell: UITableViewCell {
     lazy var cartButton: UIButton = {
         let button = UIButton()
         button.tag = 1001
-        button.setImage(.CartButton.normal, for: .normal)
+//        button.setImage(.CartButton.normal, for: .normal)
         button.addTarget(self, action: #selector(cartButtonTapped), for: .touchUpInside)
         
         return button
@@ -105,6 +106,10 @@ class ListTableViewCell: UITableViewCell {
     }()
     
     private var isAddedToCart: Bool = false
+    
+    let animation = SkeletonAnimationBuilder().makeSlidingAnimation(withDirection: .leftRight)
+    
+    let gradient = SkeletonGradient(baseColor: .appBeige40)
    
     // MARK: - Lifecycle
 
@@ -185,6 +190,21 @@ extension ListTableViewCell {
     func setCount(product: Basket.BasketItem){
         quantityLabel.text = "\(product.count)"
         currentCount = product.count
+        cartButton.setImage(.CartButton.normal, for: .normal)
+    }
+    
+    func configureCellSkeleton(){
+        imageview.isSkeletonable = true
+        priceLabel.isSkeletonable = true
+        productLabel.isSkeletonable = true
+        cartButton.isSkeletonable = true
+        priceLabel.linesCornerRadius = 4
+        productLabel.linesCornerRadius = 4
+        cartButton.skeletonCornerRadius = 18
+        imageview.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        priceLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        productLabel.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
+        cartButton.showAnimatedGradientSkeleton(usingGradient: gradient, animation: animation, transition: .crossDissolve(0.25))
     }
 }
 

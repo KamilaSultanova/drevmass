@@ -7,6 +7,7 @@
 import UIKit
 import SnapKit
 import SDWebImage
+import SkeletonView
 
 class BannerCollectionViewCell: UICollectionViewCell {
     
@@ -18,6 +19,7 @@ class BannerCollectionViewCell: UICollectionViewCell {
         imageview.contentMode = .scaleAspectFill
         imageview.clipsToBounds = true
         imageview.image = .Course.greetingBanner
+        imageview.isSkeletonable = true
         
         return imageview
     }()
@@ -50,7 +52,9 @@ class BannerCollectionViewCell: UICollectionViewCell {
         
         setupViews()
         setupConstraints()
+        self.isSkeletonable = true
     }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -60,6 +64,7 @@ extension BannerCollectionViewCell {
     func setupViews() {
         contentView.addSubview(imageView)
         imageView.addSubviews(titleLabel, subtitleLabel)
+        
     }
     
     func setupConstraints() {

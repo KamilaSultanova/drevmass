@@ -16,6 +16,7 @@ target 'drevmass' do
   pod 'youtube-ios-player-helper'
   pod 'SGSegmentedProgressBarLibrary'
   pod 'ReachabilitySwift' 
+  pod 'SkeletonView'
 
   target 'drevmassTests' do
     inherit! :search_paths
